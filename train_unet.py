@@ -4,22 +4,25 @@ from gen_patches import *
 import os.path
 import numpy as np
 import tifffile as tiff
+import rasterio
+
+
 from keras.callbacks import CSVLogger
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
-
+'''
 def normalize(img):
     min = img.min()
     max = img.max()
     x = 2.0 * (img - min) / (max - min) - 1.0
     return x
+'''
 
 
-
-N_BANDS = 8
+N_BANDS = 3
 N_CLASSES = 2  # buildings, roads, trees, crops and water
-CLASS_WEIGHTS = [0.2, 0.3, 0.1, 0.1, 0.3]
+CLASS_WEIGHTS = [0.5,0.5]
 N_EPOCHS = 150
 UPCONV = True
 PATCH_SZ = 160   # should divide by 16
@@ -37,7 +40,7 @@ if not os.path.exists(weights_path):
     os.makedirs(weights_path)
 weights_path += '/unet_weights.hdf5'
 
-trainIds = [str(i).zfill(2) for i in range(1, 25)]  # all availiable ids: from "01" to "24"
+trainIds = [str(i).zfill(2) for i in range(1, 38)]  # all availiable ids: from "01" to "38"
 
 
 if __name__ == '__main__':
@@ -48,8 +51,17 @@ if __name__ == '__main__':
 
     print('Reading images')
     for img_id in trainIds:
-        img_m = normalize(tiff.imread('./data/mband/{}.tif'.format(img_id)).transpose([1, 2, 0]))
-        mask = tiff.imread('./data/gt_mband/{}.tif'.format(img_id)).transpose([1, 2, 0]) / 255
+        name_img = './potsdam/2_Ortho_RGB/{}.tif'.format(img_id)
+        img_m = rasterio.open(name_img)
+        img_m = img_m.read().transpose([1,2,0])
+        #img_m = normalize(tiff.imread(name_img).transpose([1, 2, 0]))
+
+        name_mask = './potsdam/5_Labels_all/{}.tif'.format(img_id)
+        mask = rasterio.open(name_mask)
+        mask = mask.read().transpose([1,2,0])
+
+        #mask = tiff.imread('./potsdam/5_Labels_all/{}.tif'.format(img_id)).transpose([1, 2, 0]) / 255
+
         train_xsz = int(3/4 * img_m.shape[0])  # use 75% of image as train and 25% for validation
         X_DICT_TRAIN[img_id] = img_m[:train_xsz, :, :]
         Y_DICT_TRAIN[img_id] = mask[:train_xsz, :, :]
@@ -71,6 +83,10 @@ if __name__ == '__main__':
         model_checkpoint = ModelCheckpoint(weights_path, monitor='val_loss', save_best_only=True)
         csv_logger = CSVLogger('log_unet.csv', append=True, separator=';')
         tensorboard = TensorBoard(log_dir='./tensorboard_unet/', write_graph=True, write_images=True)
+
+        #model.fit_generator(generator=training_generator,
+        #                    validation_data=validation_generator,
+        #                    )
         model.fit(x_train, y_train, batch_size=BATCH_SIZE, epochs=N_EPOCHS,
                   verbose=2, shuffle=True,
                   callbacks=[model_checkpoint, csv_logger, tensorboard],
