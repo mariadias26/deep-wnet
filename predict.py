@@ -2,8 +2,9 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import tifffile as tiff
-
-from train_unet import weights_path, get_model, normalize, PATCH_SZ, N_CLASSES
+import rasterio
+from train_unet import weights_path, get_model, PATCH_SZ, N_CLASSES
+from scipy import stats
 
 
 def predict(x, model, patch_sz=160, n_classes=5):
@@ -46,33 +47,51 @@ def predict(x, model, patch_sz=160, n_classes=5):
 
 def picture_from_mask(mask, threshold=0):
     colors = {
-        0: [150, 150, 150],  # Buildings
-        1: [223, 194, 125],  # Roads & Tracks
-        2: [27, 120, 55],    # Trees
-        3: [166, 219, 160],  # Crops
-        4: [116, 173, 209]   # Water
+        0: [255, 255, 255],
+        1: [255, 255, 0],
+        2: [0, 0, 255],
+        3: [255, 0, 0],
+        4: [0, 255, 255],
+        5: [0, 255, 0]
+
     }
     z_order = {
-        1: 3,
-        2: 4,
-        3: 0,
-        4: 1,
-        5: 2
+        0:0,1:1,2:2,3:3,4:4,5:5
     }
     pict = 255*np.ones(shape=(3, mask.shape[1], mask.shape[2]), dtype=np.uint8)
-    for i in range(1, 6):
+    for i in range(0, 6):
         cl = z_order[i]
         for ch in range(3):
             pict[ch,:,:][mask[cl,:,:] > threshold] = colors[cl][ch]
     return pict
 
 
+def picture_from_mask_0(mask, threshold=0):
+    colors = {
+        0: [255, 255, 255],   #imp surface
+        1: [255, 255, 0],     #car
+        2: [0, 0, 255],       #building
+        3: [255, 0, 0],       #background
+        4: [0, 255, 255],     #low veg
+        5: [0, 255, 0]        #tree
+    }
+
+    mask_ind = np.argmax(mask, axis=0)
+    print('\n\n\nargmax(mask)', np.shape(mask_ind), '\n\n')
+    pict = 255*np.ones(shape=(3, mask.shape[1], mask.shape[2]), dtype=np.uint8)
+    for cl in range(6):
+        for ch in range(3):
+            pict[ch,:,:][mask_ind] = colors[cl][ch]
+    return pict
+
 if __name__ == '__main__':
     model = get_model()
     model.load_weights(weights_path)
-    test_id = 'test'
-    img = normalize(tiff.imread('data/mband/{}.tif'.format(test_id)).transpose([1,2,0]))   # make channels last
+    test_id = 'top_potsdam_2_13_RGB'
+    img = rasterio.open('./potsdam/2_Ortho_RGB/{}.tif'.format(test_id))
+    img = img.read().transpose([1,2,0])
 
+    '''
     for i in range(7):
         if i == 0:  # reverse first dimension
             mymat = predict(img[::-1,:,:], model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])
@@ -108,12 +127,16 @@ if __name__ == '__main__':
             #print(temp[0][0][0], temp[3][12][13])
             print("Case 7", temp.shape, mymat.shape)
             mymat = np.mean( np.array([ temp, mymat ]), axis=0 )
+    '''
+    mymat = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])
+    map = picture_from_mask(mymat, 0.4)
+    result = (255*mymat).astype('uint8')
 
-    #print(mymat[0][0][0], mymat[3][12][13])
-    map = picture_from_mask(mymat, 0.5)
-    #mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])  # make channels first
-    #map = picture_from_mask(mask, 0.5)
+    #label = rasterio.open('./potsdam/5_Labels_all/{}.tif'.format(test_id))
+    #label = img.read()#.transpose([1,2,0])
+    #print(np.shape(label))
+
 
     #tiff.imsave('result.tif', (255*mask).astype('uint8'))
-    tiff.imsave('result.tif', (255*mymat).astype('uint8'))
+    tiff.imsave('result.tif', result)
     tiff.imsave('map.tif', map)

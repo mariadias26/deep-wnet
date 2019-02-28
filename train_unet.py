@@ -5,7 +5,7 @@ import os.path
 import numpy as np
 import tifffile as tiff
 import rasterio
-
+import glob
 
 from keras.callbacks import CSVLogger
 from keras.callbacks import TensorBoard
@@ -21,8 +21,8 @@ def normalize(img):
 
 
 N_BANDS = 3
-N_CLASSES = 2  # buildings, roads, trees, crops and water
-CLASS_WEIGHTS = [0.5,0.5]
+N_CLASSES = 6  # buildings, roads, trees, crops and water
+CLASS_WEIGHTS = [0.15,0.15,0.15,0.15,0.2,0.2]
 N_EPOCHS = 150
 UPCONV = True
 PATCH_SZ = 160   # should divide by 16
@@ -30,6 +30,13 @@ BATCH_SIZE = 100
 TRAIN_SZ = 4000  # train size
 VAL_SZ = 1000    # validation size
 
+TRAIN_IDS = ['2_10','2_11','3_10','3_11','4_10','4_11','5_10','5_11','6_7','6_8','6_9','6_10','6_11','7_7','7_8','7_9','7_10','7_11']
+VAL_IDS = ['2_12','3_12','4_12','5_12','6_12','7_12']
+
+path_img='./potsdam/2_Ortho_RGB/*.tif'
+files_img = [os.path.basename(f) for f in glob.glob(path_img)]
+path_gt='./potsdam/5_Labels_all_norm/*.tif'
+files_gt =  [os.path.basename(f) for f in glob.glob(path_gt)]
 
 def get_model():
     return unet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS, upconv=UPCONV, class_weights=CLASS_WEIGHTS)
@@ -40,7 +47,7 @@ if not os.path.exists(weights_path):
     os.makedirs(weights_path)
 weights_path += '/unet_weights.hdf5'
 
-trainIds = [str(i).zfill(2) for i in range(1, 38)]  # all availiable ids: from "01" to "38"
+trainIds = [str(i).zfill(2) for i in range(13, 38)]  # all availiable ids: from "01" to "38"
 
 
 if __name__ == '__main__':
@@ -50,25 +57,42 @@ if __name__ == '__main__':
     Y_DICT_VALIDATION = dict()
 
     print('Reading images')
-    for img_id in trainIds:
-        name_img = './potsdam/2_Ortho_RGB/{}.tif'.format(img_id)
-        img_m = rasterio.open(name_img)
-        img_m = img_m.read().transpose([1,2,0])
-        #img_m = normalize(tiff.imread(name_img).transpose([1, 2, 0]))
+    dict_all = dict()
+    countTrain = 0
+    countVal = 0
 
-        name_mask = './potsdam/5_Labels_all/{}.tif'.format(img_id)
-        mask = rasterio.open(name_mask)
-        mask = mask.read().transpose([1,2,0])
+    for train_id in TRAIN_IDS:
+        for file in files_img:
+            if train_id in file:
+                name_img = './potsdam/2_Ortho_RGB/{}'.format(file)
+                break
+        #img = tiff.imread(name_img).transpose([1,2,0])
+        img = rasterio.open(name_img)
+        img = img.read().transpose([1,2,0])
 
-        #mask = tiff.imread('./potsdam/5_Labels_all/{}.tif'.format(img_id)).transpose([1, 2, 0]) / 255
+        mask = tiff.imread('./potsdam/5_Labels_all_norm/top_potsdam_{}_label.tif'.format(train_id))
+        X_DICT_TRAIN[train_id] = img
+        Y_DICT_TRAIN[train_id] = mask
+        countTrain+=1
+        print(train_id + ' read')
 
-        train_xsz = int(3/4 * img_m.shape[0])  # use 75% of image as train and 25% for validation
-        X_DICT_TRAIN[img_id] = img_m[:train_xsz, :, :]
-        Y_DICT_TRAIN[img_id] = mask[:train_xsz, :, :]
-        X_DICT_VALIDATION[img_id] = img_m[train_xsz:, :, :]
-        Y_DICT_VALIDATION[img_id] = mask[train_xsz:, :, :]
-        print(img_id + ' read')
+
+    for val_id in VAL_IDS:
+        for file in files_img:
+            if val_id in file:
+                name_img = './potsdam/2_Ortho_RGB/{}'.format(file)
+                break
+        #img = tiff.imread(name_img).transpose([1,2,0])
+        img = rasterio.open(name_img)
+        img = img.read().transpose([1,2,0])
+
+        mask = tiff.imread('./potsdam/5_Labels_all_norm/top_potsdam_{}_label.tif'.format(train_id))
+        X_DICT_VALIDATION[val_id] = img
+        Y_DICT_VALIDATION[val_id] = mask
+        countVal+=1
+        print(val_id + ' read')
     print('Images were read')
+    print('Train with ', countTrain, ' images and validation with ', countVal, ' images.')
 
     def train_net():
         print("start train net")
