@@ -5,6 +5,7 @@ import tifffile as tiff
 import rasterio
 from train_unet import weights_path, get_model, PATCH_SZ, N_CLASSES
 from scipy import stats
+from sklearn.metrics import classification_report, accuracy_score
 
 
 def predict(x, model, patch_sz=160, n_classes=5):
@@ -45,28 +46,8 @@ def predict(x, model, patch_sz=160, n_classes=5):
     return prediction[:img_height, :img_width, :]
 
 
-def picture_from_mask(mask, threshold=0):
-    colors = {
-        0: [255, 255, 255],
-        1: [255, 255, 0],
-        2: [0, 0, 255],
-        3: [255, 0, 0],
-        4: [0, 255, 255],
-        5: [0, 255, 0]
 
-    }
-    z_order = {
-        0:0,1:1,2:2,3:3,4:4,5:5
-    }
-    pict = 255*np.ones(shape=(3, mask.shape[1], mask.shape[2]), dtype=np.uint8)
-    for i in range(0, 6):
-        cl = z_order[i]
-        for ch in range(3):
-            pict[ch,:,:][mask[cl,:,:] > threshold] = colors[cl][ch]
-    return pict
-
-
-def picture_from_mask_0(mask, threshold=0):
+def picture_from_mask(mask):
     colors = {
         0: [255, 255, 255],   #imp surface
         1: [255, 255, 0],     #car
@@ -77,19 +58,39 @@ def picture_from_mask_0(mask, threshold=0):
     }
 
     mask_ind = np.argmax(mask, axis=0)
-    print('\n\n\nargmax(mask)', np.shape(mask_ind), '\n\n')
-    pict = 255*np.ones(shape=(3, mask.shape[1], mask.shape[2]), dtype=np.uint8)
+    pict = np.empty(shape=(3, mask.shape[1], mask.shape[2]))
     for cl in range(6):
-        for ch in range(3):
-            pict[ch,:,:][mask_ind] = colors[cl][ch]
+      for ch in range(3):
+        pict[ch,:,:] = np.where(mask_ind == cl, colors[cl][ch], pict[ch,:,:])
     return pict
+
+def mask_from_picture(picture):
+  colors = {
+      (255, 255, 255): 0,   #imp surface
+      (255, 255, 0): 1,     #car
+      (0, 0, 255): 2,       #building
+      (255, 0, 0): 3,       #background
+      (0, 255, 255): 4,     #low veg
+      (0, 255, 0): 5        #tree
+  }
+  picture = picture.transpose([1,2,0])
+  mask = np.ndarray(shape=(256*256*256), dtype='int32')
+  mask[:] = -1
+  for rgb, idx in colors.items():
+    rgb = rgb[0] * 65536 + rgb[1] * 256 + rgb[2]
+    mask[rgb] = idx
+
+  picture = picture.dot(np.array([65536, 256, 1], dtype='int32'))
+  return mask[picture]
 
 if __name__ == '__main__':
     model = get_model()
     model.load_weights(weights_path)
-    test_id = 'top_potsdam_2_13_RGB'
-    img = rasterio.open('./potsdam/2_Ortho_RGB/{}.tif'.format(test_id))
+    test_id = '2_13'
+    img = rasterio.open('./potsdam/2_Ortho_RGB/top_potsdam_{}_RGB.tif'.format(test_id))
     img = img.read().transpose([1,2,0])
+    label = rasterio.open('./potsdam/5_Labels_all/top_potsdam_{}_label.tif'.format(test_id)).read()
+    gt = mask_from_picture(label)
 
     '''
     for i in range(7):
@@ -128,15 +129,18 @@ if __name__ == '__main__':
             print("Case 7", temp.shape, mymat.shape)
             mymat = np.mean( np.array([ temp, mymat ]), axis=0 )
     '''
-    mymat = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])
-    map = picture_from_mask(mymat, 0.4)
-    result = (255*mymat).astype('uint8')
-
-    #label = rasterio.open('./potsdam/5_Labels_all/{}.tif'.format(test_id))
-    #label = img.read()#.transpose([1,2,0])
-    #print(np.shape(label))
+    mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])
+    prediction = picture_from_mask(mask)
+    result = (255*mask).astype('uint8')
 
 
-    #tiff.imsave('result.tif', (255*mask).astype('uint8'))
+    target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
+    y_true = gt.ravel()
+    y_pred = np.argmax(mask, axis=0).ravel()
+    report = classification_report(y_true, y_pred, target_names = target_labels)
+    accuracy = accuracy_score(y_true, y_pred)
+    print(report)
+    print('\nAccuracy', accuracy)
+
     tiff.imsave('result.tif', result)
-    tiff.imsave('map.tif', map)
+    tiff.imsave('map.tif', prediction)
