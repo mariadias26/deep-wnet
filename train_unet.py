@@ -27,7 +27,7 @@ VAL_SZ = 1000    # validation size
 TRAIN_IDS = ['2_10','2_11','3_10','3_11','4_10','4_11','5_10','5_11','6_7','6_8','6_9','6_10','6_11','7_7','7_8','7_9','7_10','7_11']
 VAL_IDS = ['2_12','3_12','4_12','5_12','6_12','7_12']
 
-path_img='./potsdam/2_Ortho_RGB/*.tif'
+path_img='./data-mdias/2_Ortho_RGB/*.tif'
 files_img = [os.path.basename(f) for f in glob.glob(path_img)]
 
 
@@ -52,15 +52,12 @@ if __name__ == '__main__':
 
 
     for train_id in TRAIN_IDS:
-        for file in files_img:
-            if train_id in file:
-                name_img = './potsdam/2_Ortho_RGB/{}'.format(file)
-                break
-        #img = tiff.imread(name_img).transpose([1,2,0])
+
+        name_img = './data-mdias/2_Ortho_RGB/2_Ortho_RGB/top_potsdam_{}_RGB.tif'.format(train_id)
         img = rasterio.open(name_img)
         img = img.read().transpose([1,2,0])
 
-        mask = tiff.imread('./potsdam/5_Labels_all_norm/top_potsdam_{}_label.tif'.format(train_id))
+        mask = tiff.imread('./data-mdias/5_Labels_all_norm/top_potsdam_{}_label.tif'.format(train_id))
         X_DICT_TRAIN[train_id] = img
         Y_DICT_TRAIN[train_id] = mask
         gc.collect()
@@ -68,15 +65,12 @@ if __name__ == '__main__':
 
 
     for val_id in VAL_IDS:
-        for file in files_img:
-            if val_id in file:
-                name_img = './potsdam/2_Ortho_RGB/{}'.format(file)
-                break
-        #img = tiff.imread(name_img).transpose([1,2,0])
+
+        name_img = './data-mdias/2_Ortho_RGB/2_Ortho_RGB/top_potsdam_{}_RGB.tif'.format(val_id)
         img = rasterio.open(name_img)
         img = img.read().transpose([1,2,0])
 
-        mask = tiff.imread('./potsdam/5_Labels_all_norm/top_potsdam_{}_label.tif'.format(val_id))
+        mask = tiff.imread('./data-mdias/5_Labels_all_norm/top_potsdam_{}_label.tif'.format(val_id))
         X_DICT_VALIDATION[val_id] = img
         Y_DICT_VALIDATION[val_id] = mask
         gc.collect()
@@ -91,14 +85,14 @@ if __name__ == '__main__':
             if os.path.isfile(weights_path):
                 model.load_weights(weights_path)
             #model_checkpoint = ModelCheckpoint(weights_path, monitor='val_loss', save_weights_only=True, save_best_only=True)
-            #early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=1, mode='auto')
+            early_stopping = EarlyStopping(monitor='val_loss', restore_best_weights = True, patience = 5)
             #reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.1, patience=5, min_lr=0.00001)
             model_checkpoint = ModelCheckpoint(weights_path, monitor='val_loss', save_best_only=True)
             csv_logger = CSVLogger('log_unet.csv', append=True, separator=';')
             tensorboard = TensorBoard(log_dir='./tensorboard_unet/', write_graph=True, write_images=True)
             model.fit(x_train, y_train, batch_size=BATCH_SIZE, epochs=N_EPOCHS,
                       verbose=2, shuffle=True,
-                      callbacks=[model_checkpoint, csv_logger, tensorboard],
+                      callbacks=[model_checkpoint, csv_logger, tensorboard, early_stopping],
                       validation_data=(x_val, y_val))
             return model
     train_net()
