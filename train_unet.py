@@ -29,10 +29,11 @@ VAL_SZ = 1000    # validation size
 TRAIN_IDS = ['2_10']
 VAL_IDS = ['2_12']
 
+path_img = './potsdam/2_Ortho_RGB/top_potsdam_{}_RGB.tif'
+path_mask = './potsdam/5_Labels_all_norm/top_potsdam_{}_label.tif'
 
-path_img='./../data-mdias/2_Ortho_RGB/*.tif'
-files_img = [os.path.basename(f) for f in glob.glob(path_img)]
-
+#path_img = './../data-mdias/2_Ortho_RGB/2_Ortho_RGB/top_potsdam_{}_RGB.tif
+#path_mask = './../data-mdias/5_Labels_all_norm/top_potsdam_{}_label.tif'
 
 def get_model():
     return unet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS, upconv=UPCONV, class_weights=CLASS_WEIGHTS)
@@ -55,12 +56,11 @@ if __name__ == '__main__':
 
 
     for train_id in TRAIN_IDS:
-
-        name_img = './../data-mdias/2_Ortho_RGB/2_Ortho_RGB/top_potsdam_{}_RGB.tif'.format(train_id)
+        name_img = path_img.format(train_id)
         img = rasterio.open(name_img)
         img = img.read().transpose([1,2,0])
 
-        mask = tiff.imread('./../data-mdias/5_Labels_all_norm/top_potsdam_{}_label.tif'.format(train_id))
+        mask = tiff.imread(path_mask.format(train_id))
         X_DICT_TRAIN[train_id] = img
         Y_DICT_TRAIN[train_id] = mask
         gc.collect()
@@ -69,11 +69,11 @@ if __name__ == '__main__':
 
     for val_id in VAL_IDS:
 
-        name_img = './../data-mdias/2_Ortho_RGB/2_Ortho_RGB/top_potsdam_{}_RGB.tif'.format(val_id)
+        name_img = path_img.format(val_id)
         img = rasterio.open(name_img)
         img = img.read().transpose([1,2,0])
 
-        mask = tiff.imread('./../data-mdias/5_Labels_all_norm/top_potsdam_{}_label.tif'.format(val_id))
+        mask = tiff.imread(path_mask.format(val_id))
         X_DICT_VALIDATION[val_id] = img
         Y_DICT_VALIDATION[val_id] = mask
         gc.collect()
