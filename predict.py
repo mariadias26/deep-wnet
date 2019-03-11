@@ -6,6 +6,7 @@ import rasterio
 from train_unet import weights_path, get_model, PATCH_SZ, N_CLASSES
 from scipy import stats
 from sklearn.metrics import classification_report, accuracy_score
+import gc
 
 
 def predict(x, model, patch_sz=160, n_classes=5):
@@ -86,61 +87,33 @@ def mask_from_picture(picture):
 if __name__ == '__main__':
     model = get_model()
     model.load_weights(weights_path)
-    test_id = '2_13'
-    img = rasterio.open('./potsdam/2_Ortho_RGB/top_potsdam_{}_RGB.tif'.format(test_id))
-    img = img.read().transpose([1,2,0])
-    label = rasterio.open('./potsdam/5_Labels_all/top_potsdam_{}_label.tif'.format(test_id)).read()
-    gt = mask_from_picture(label)
+    test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
+    accuracy_all = []
+    for test_id in test:
+        img = rasterio.open('./potsdam/2_Ortho_RGB/top_potsdam_{}_RGB.tif'.format(test_id))
+        img = img.read().transpose([1,2,0])
+        label = rasterio.open('./potsdam/5_Labels_all/top_potsdam_{}_label.tif'.format(test_id)).read()
+        gt = mask_from_picture(label)
 
-    '''
-    for i in range(7):
-        if i == 0:  # reverse first dimension
-            mymat = predict(img[::-1,:,:], model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])
-            #print(mymat[0][0][0], mymat[3][12][13])
-            print("Case 1",img.shape, mymat.shape)
-        elif i == 1:    # reverse second dimension
-            temp = predict(img[:,::-1,:], model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])
-            #print(temp[0][0][0], temp[3][12][13])
-            print("Case 2", temp.shape, mymat.shape)
-            mymat = np.mean( np.array([ temp[:,::-1,:], mymat ]), axis=0 )
-        elif i == 2:    # transpose(interchange) first and second dimensions
-            temp = predict(img.transpose([1,0,2]), model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])
-            #print(temp[0][0][0], temp[3][12][13])
-            print("Case 3", temp.shape, mymat.shape)
-            mymat = np.mean( np.array([ temp.transpose(0,2,1), mymat ]), axis=0 )
-        elif i == 3:
-            temp = predict(np.rot90(img, 1), model, patch_sz=PATCH_SZ, n_classes=N_CLASSES)
-            #print(temp.transpose([2,0,1])[0][0][0], temp.transpose([2,0,1])[3][12][13])
-            print("Case 4", temp.shape, mymat.shape)
-            mymat = np.mean( np.array([ np.rot90(temp, -1).transpose([2,0,1]), mymat ]), axis=0 )
-        elif i == 4:
-            temp = predict(np.rot90(img,2), model, patch_sz=PATCH_SZ, n_classes=N_CLASSES)
-            #print(temp.transpose([2,0,1])[0][0][0], temp.transpose([2,0,1])[3][12][13])
-            print("Case 5", temp.shape, mymat.shape)
-            mymat = np.mean( np.array([ np.rot90(temp,-2).transpose([2,0,1]), mymat ]), axis=0 )
-        elif i == 5:
-            temp = predict(np.rot90(img,3), model, patch_sz=PATCH_SZ, n_classes=N_CLASSES)
-            #print(temp.transpose([2,0,1])[0][0][0], temp.transpose([2,0,1])[3][12][13])
-            print("Case 6", temp.shape, mymat.shape)
-            mymat = np.mean( np.array([ np.rot90(temp, -3).transpose(2,0,1), mymat ]), axis=0 )
-        else:
-            temp = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])
-            #print(temp[0][0][0], temp[3][12][13])
-            print("Case 7", temp.shape, mymat.shape)
-            mymat = np.mean( np.array([ temp, mymat ]), axis=0 )
-    '''
-    mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])
-    prediction = picture_from_mask(mask)
-    result = (255*mask).astype('uint8')
+        mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])
+        prediction = picture_from_mask(mask)
+        result = (255*mask).astype('uint8')
 
 
-    target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
-    y_true = gt.ravel()
-    y_pred = np.argmax(mask, axis=0).ravel()
-    report = classification_report(y_true, y_pred, target_names = target_labels)
-    accuracy = accuracy_score(y_true, y_pred)
-    print(report)
-    print('\nAccuracy', accuracy)
-
+        target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
+        y_true = gt.ravel()
+        y_pred = np.argmax(mask, axis=0).ravel()
+        report = classification_report(y_true, y_pred, target_names = target_labels)
+        accuracy = accuracy_score(y_true, y_pred)
+        print('\n',test_id)
+        print(report)
+        print('\nAccuracy', accuracy)
+        accuracy_all.append(accuracy)
+        gc.collect()
+        gc.collect()
+        gc.collect()
+        
+    print(accuracy_all)
+    print('Accuracy all', sum(accuracy_all)/len(accuracy_all))
     tiff.imsave('result.tif', result)
     tiff.imsave('map.tif', prediction)

@@ -24,19 +24,46 @@ BATCH_SIZE = 100
 TRAIN_SZ = 4000  # train size
 VAL_SZ = 1000    # validation size
 
-#TRAIN_IDS = ['2_10','2_11','3_10','3_11','4_10','4_11','5_10','5_11','6_7','6_8','6_9','6_10','6_11','7_7','7_8','7_9','7_10','7_11']
-#VAL_IDS = ['2_12','3_12','4_12','5_12','6_12','7_12']
-TRAIN_IDS = ['2_10']
-VAL_IDS = ['2_12']
+TRAIN_IDS = ['2_10','2_11','3_10','3_11','4_10','4_11','5_10','5_11','6_7','6_8','6_9','6_10','6_11','7_7','7_8','7_9','7_10','7_11']
+VAL_IDS = ['2_12','3_12','4_12','5_12','6_12','7_12']
+#TRAIN_IDS = ['2_10']
+#VAL_IDS = ['2_12']
+
+color_codes = {
+  (255, 255, 255): 1,   #imp surface
+  (255, 255, 0): 2,     #car
+  (0, 0, 255): 3,       #building
+  (255, 0, 0): 4,       #background
+  (0, 255, 255): 5,     #low veg
+  (0, 255, 0): 6        #tree
+}
 
 path_img = './potsdam/2_Ortho_RGB/top_potsdam_{}_RGB.tif'
-path_mask = './potsdam/5_Labels_all_norm/top_potsdam_{}_label.tif'
+path_mask = './potsdam/5_Labels_all/top_potsdam_{}_label.tif'
 
 #path_img = './../data-mdias/2_Ortho_RGB/2_Ortho_RGB/top_potsdam_{}_RGB.tif
 #path_mask = './../data-mdias/5_Labels_all_norm/top_potsdam_{}_label.tif'
 
 def get_model():
     return unet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS, upconv=UPCONV, class_weights=CLASS_WEIGHTS)
+
+def get_map(color_codes):
+  color_map = np.ndarray(shape=(256*256*256), dtype='int32')
+  color_map[:] = -1
+  for rgb, idx in color_codes.items():
+    rgb = rgb[0] * 65536 + rgb[1] * 256 + rgb[2]
+    color_map[rgb] = idx
+  return color_map
+
+def norm_image(image, color_map):
+  image = np.rint(image/255)*255
+  image = image.astype(int)
+  image = image.dot(np.array([65536, 256, 1], dtype='int32'))
+
+  new_a = color_map[image]
+  image_norm = (np.arange(new_a.max()) == new_a[...,None]-1).astype(int)
+
+  return image_norm
 
 
 weights_path = 'weights'
@@ -53,7 +80,7 @@ if __name__ == '__main__':
 
     print('Reading images')
     dict_all = dict()
-
+    color_map = get_map(color_codes)
 
     for train_id in TRAIN_IDS:
         name_img = path_img.format(train_id)
@@ -62,7 +89,7 @@ if __name__ == '__main__':
 
         mask = tiff.imread(path_mask.format(train_id))
         X_DICT_TRAIN[train_id] = img
-        Y_DICT_TRAIN[train_id] = mask
+        Y_DICT_TRAIN[train_id] = norm_image(mask, color_map)
         gc.collect()
         print(train_id, ' read')
 
@@ -75,7 +102,7 @@ if __name__ == '__main__':
 
         mask = tiff.imread(path_mask.format(val_id))
         X_DICT_VALIDATION[val_id] = img
-        Y_DICT_VALIDATION[val_id] = mask
+        Y_DICT_VALIDATION[val_id] = norm_image(mask, color_map)
         gc.collect()
         print(val_id, ' read')
     print('Images were read')
