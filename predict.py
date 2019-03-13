@@ -112,7 +112,7 @@ if __name__ == '__main__':
         gc.collect()
         gc.collect()
         gc.collect()
-        
+
     print(accuracy_all)
     print('Accuracy all', sum(accuracy_all)/len(accuracy_all))
     tiff.imsave('result.tif', result)
