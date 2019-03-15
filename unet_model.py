@@ -106,5 +106,29 @@ def unet_model(n_classes=5, im_sz=160, n_channels=8, n_filters_start=32, growth_
         class_loglosses = K.mean(K.binary_crossentropy(y_true, y_pred), axis=[0, 1, 2])
         return K.sum(class_loglosses * K.constant(class_weights))
 
-    model.compile(optimizer=Adam(), loss=weighted_binary_crossentropy)
+    def tversky_loss(y_true, y_pred, alpha=0.3, beta=0.7):
+        smooth=1e-10
+        y_true = K.flatten(y_true)
+        y_pred = K.flatten(y_pred)
+        truepos = K.sum(y_true * y_pred)
+        fp_and_fn = alpha * K.sum(y_pred * (1 - y_true)) + beta * K.sum((1 - y_pred) * y_true)
+        answer = (truepos + smooth) / ((truepos + smooth) + fp_and_fn)
+        return -answer
+
+    """Twersky loss function for image segmentation : https://arxiv.org/abs/1706.05721 : the score is computed for each class separately and then summed"""
+    def tversky_loss_multilabel(y_true, y_pred, alpha=0.3, beta=0.7):
+        alpha = 0.5
+        beta  = 0.5
+        ones = K.ones_like(y_true)
+        p0 = y_pred      # proba that voxels are class i
+        p1 = ones-y_pred # proba that voxels are not class i
+        g0 = y_true
+        g1 = ones-y_true
+        num = K.sum(p0*g0, (0,1,2,3))
+        den = num + alpha*K.sum(p0*g1,(0,1,2,3)) + beta*K.sum(p1*g0,(0,1,2,3))
+        T = K.sum(num/den) # when summing over classes, T has dynamic range [0 Ncl]
+        Ncl = K.cast(K.shape(y_true)[-1], 'float32')
+        return Ncl-T
+
+    model.compile(optimizer=Adam(), loss=tversky_loss_multilabel)
     return model
