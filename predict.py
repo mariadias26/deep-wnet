@@ -1,15 +1,20 @@
+from __future__ import print_function
 import math
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
 import numpy as np
 import matplotlib.pyplot as plt
 import tifffile as tiff
 import rasterio
-from train_unet import weights_path, get_model, PATCH_SZ, N_CLASSES
+from train_unet_generator import weights_path, get_model, PATCH_SZ, N_CLASSES
 from scipy import stats
 from sklearn.metrics import classification_report, accuracy_score
 import gc
+from skimage.util.shape import view_as_windows
+import psutil
 
 
-def predict(x, model, patch_sz=160, n_classes=5):
+def old_predict(x, model, patch_sz=160, n_classes=5):
     img_height = x.shape[0]
     img_width = x.shape[1]
     n_channels = x.shape[2]
@@ -46,6 +51,24 @@ def predict(x, model, patch_sz=160, n_classes=5):
         prediction[x0:x1, y0:y1, :] = patches_predict[k, :, :, :]
     return prediction[:img_height, :img_width, :]
 
+
+def predict(x, model, patch_sz=160, n_classes=5):
+    print('\n\n', np.shape(x))
+    patches = view_as_windows(x, (patch_sz, patch_sz, x.ndim), step = patch_sz//5)
+    width_window, height_window, z, width_x, height_y, num_channel = patches.shape
+    patches = np.reshape(patches, (width_window, height_window,  width_x, height_y, num_channel))
+    print(np.shape(patches))
+
+    print(psutil.cpu_percent())
+    print(psutil.virtual_memory())  # physical memory usage
+    print('memory % used:', psutil.virtual_memory()[2])
+    predict_array = np.empty(shape=np.shape(patches))
+    print(np.shape(predict_array))
+    #for w in width_window:
+
+    patches_predict = model.predict(patches[0], batch_size=4)
+    print(np.shape(patches_predict), '\n\n\n')
+    return prediction[:img_height, :img_width, :]
 
 
 def picture_from_mask(mask):
@@ -90,15 +113,15 @@ if __name__ == '__main__':
     test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
     accuracy_all = []
     for test_id in test:
-        img = rasterio.open('./potsdam/2_Ortho_RGB/top_potsdam_{}_RGB.tif'.format(test_id))
-        img = img.read().transpose([1,2,0])
-        label = rasterio.open('./potsdam/5_Labels_all/top_potsdam_{}_label.tif'.format(test_id)).read()
+        path_img = './../data-mdias/Images/top_potsdam_{}_RGB.tif'.format(test_id)
+        img = tiff.imread(path_img)
+        path_mask = './../data-mdias/5_Labels_all/top_potsdam_{}_label.tif'.format(test_id)
+        label = tiff.imread(path_mask).transpose([2,0,1])
         gt = mask_from_picture(label)
 
         mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])
+        print('\n\nMask', np.shape(mask))
         prediction = picture_from_mask(mask)
-        result = (255*mask).astype('uint8')
-
 
         target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
         y_true = gt.ravel()
@@ -115,5 +138,4 @@ if __name__ == '__main__':
 
     print(accuracy_all)
     print('Accuracy all', sum(accuracy_all)/len(accuracy_all))
-    tiff.imsave('result.tif', result)
     tiff.imsave('map.tif', prediction)
