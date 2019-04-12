@@ -1,5 +1,14 @@
 import random
 import numpy as np
+import cv2
+
+def brightness_augment(img, factor=1):
+    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV) #convert to hsv
+    hsv = np.array(hsv, dtype=np.float64)
+    hsv[:, :, 2] = hsv[:, :, 2] * (factor + np.random.uniform()) #scale channel V uniformly
+    hsv[:, :, 2][hsv[:, :, 2] > 255] = 255 #reset out of range values
+    rgb = cv2.cvtColor(np.array(hsv, dtype=np.uint8), cv2.COLOR_HSV2RGB)
+    return rgb
 
 def get_rand_patch(img, mask, sz=160):
     """
@@ -15,25 +24,15 @@ def get_rand_patch(img, mask, sz=160):
     patch_mask = mask[xc:(xc + sz), yc:(yc + sz)]
 
     # Apply some random transformations
-    random_transformation = np.random.randint(1,8)
+    random_transformation = np.random.randint(1,5)
     if random_transformation == 1:  # reverse first dimension
         patch_img = patch_img[::-1,:,:]
         patch_mask = patch_mask[::-1,:,:]
     elif random_transformation == 2:    # reverse second dimension
         patch_img = patch_img[:,::-1,:]
         patch_mask = patch_mask[:,::-1,:]
-    elif random_transformation == 3:    # transpose(interchange) first and second dimensions
-        patch_img = patch_img.transpose([1,0,2])
-        patch_mask = patch_mask.transpose([1,0,2])
-    elif random_transformation == 4:
-        patch_img = np.rot90(patch_img, 1)
-        patch_mask = np.rot90(patch_mask, 1)
-    elif random_transformation == 5:
-        patch_img = np.rot90(patch_img, 2)
-        patch_mask = np.rot90(patch_mask, 2)
-    elif random_transformation == 6:
-        patch_img = np.rot90(patch_img, 3)
-        patch_mask = np.rot90(patch_mask, 3)
+    elif random_transformation == 3:    # brightness augment
+        patch_img = brightness_augment(patch_img)
     else:
         pass
 

@@ -7,9 +7,11 @@ def get_input(path):
     image = tiff.imread(path)
     return image
 
+
 def get_mask(path):
     mask = tiff.imread(path)
     return mask
+
 
 def image_generator(ids_file, path_image, path_mask, batch_size = 5, patch_size = 160):
     while True:
@@ -25,8 +27,6 @@ def image_generator(ids_file, path_image, path_mask, batch_size = 5, patch_size 
             y.append(mask_patch)
             total_patches += 1
 
-        #batch_x = np.array( x )
+        batch_x = np.array( x )
         batch_y = np.array( y )
-        batch_x = np.array( [i/255 for i in x] )
-        yield ( batch_x, [batch_y , batch_x])
-        #yield ( batch_x, batch_y )
+        yield ( batch_x, batch_y )

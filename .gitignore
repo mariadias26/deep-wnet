@@ -1,3 +1,4 @@
+*.jestima
 *.pyc
 *.zip
 *.tif
