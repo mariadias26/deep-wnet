@@ -1,11 +1,10 @@
 # u-net model with up-convolution or up-sampling and weighted binary-crossentropy as loss func
 
 from keras.models import Model
-from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, concatenate, Conv2DTranspose, BatchNormalization, Dropout
+from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, concatenate, Conv2DTranspose, BatchNormalization, Dropout, LeakyReLU
 from keras.optimizers import Adam
 from keras.utils import plot_model
 from keras import backend as K
-
 
 def unet_model(n_classes=5, im_sz=160, n_channels=8, n_filters_start=32, growth_factor=2, upconv=True,
                class_weights=[0.2, 0.3, 0.1, 0.1, 0.3]):
@@ -106,29 +105,18 @@ def unet_model(n_classes=5, im_sz=160, n_channels=8, n_filters_start=32, growth_
         class_loglosses = K.mean(K.binary_crossentropy(y_true, y_pred), axis=[0, 1, 2])
         return K.sum(class_loglosses * K.constant(class_weights))
 
-    def tversky_loss(y_true, y_pred, alpha=0.3, beta=0.7):
-        smooth=1e-10
-        y_true = K.flatten(y_true)
-        y_pred = K.flatten(y_pred)
-        truepos = K.sum(y_true * y_pred)
-        fp_and_fn = alpha * K.sum(y_pred * (1 - y_true)) + beta * K.sum((1 - y_pred) * y_true)
-        answer = (truepos + smooth) / ((truepos + smooth) + fp_and_fn)
-        return -answer
+    def dice_coef(y_true, y_pred, smooth=1e-7):
+        y_true_f = K.flatten(y_true)
+        y_pred_f = K.flatten(y_pred)
+        intersection = K.sum(y_true_f * y_pred_f)
+        return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
-    """Twersky loss function for image segmentation : https://arxiv.org/abs/1706.05721 : the score is computed for each class separately and then summed"""
-    def tversky_loss_multilabel(y_true, y_pred, alpha=0.3, beta=0.7):
-        alpha = 0.5
-        beta  = 0.5
-        ones = K.ones_like(y_true)
-        p0 = y_pred      # proba that voxels are class i
-        p1 = ones-y_pred # proba that voxels are not class i
-        g0 = y_true
-        g1 = ones-y_true
-        num = K.sum(p0*g0, (0,1,2,3))
-        den = num + alpha*K.sum(p0*g1,(0,1,2,3)) + beta*K.sum(p1*g0,(0,1,2,3))
-        T = K.sum(num/den) # when summing over classes, T has dynamic range [0 Ncl]
-        Ncl = K.cast(K.shape(y_true)[-1], 'float32')
-        return Ncl-T
+    """This simply calculates the dice score for each individual label, and then sums them together, and includes the background."""
+    def dice_coef_multilabel(y_true, y_pred):
+        dice=n_classes
+        for index in range(n_classes):
+            dice -= dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
+        return dice/n_classes
 
-    model.compile(optimizer=Adam(), loss=tversky_loss_multilabel)
+    model.compile(optimizer=Adam(), loss=dice_coef_multilabel)
     return model

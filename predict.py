@@ -1,17 +1,23 @@
 from __future__ import print_function
 import math
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = ''
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import tifffile as tiff
 import rasterio
-from train_unet_generator import weights_path, get_model, PATCH_SZ, N_CLASSES
+from train_unet import weights_path, get_model, PATCH_SZ, N_CLASSES
 from scipy import stats
 from sklearn.metrics import classification_report, accuracy_score
 import gc
 from skimage.util.shape import view_as_windows
 import psutil
+import time
+from itertools import product
+import numbers
+from sklearn.feature_extraction import image
+from patchify import patchify, unpatchify
+from numpy.lib.stride_tricks import as_strided
 
 
 def old_predict(x, model, patch_sz=160, n_classes=5):
@@ -51,24 +57,32 @@ def old_predict(x, model, patch_sz=160, n_classes=5):
         prediction[x0:x1, y0:y1, :] = patches_predict[k, :, :, :]
     return prediction[:img_height, :img_width, :]
 
+def reconstruct_patches(patches, image_size, step):
+    i_h, i_w = image_size[:2]
+    p_h, p_w = patches.shape[1:3]
+    img = np.zeros(image_size)
+    patch_count = np.zeros(image_size)
+    # compute the dimensions of the patches array
+    n_h = int((i_h - p_h) / step + 1)
+    n_w = int((i_w - p_w) / step + 1)
+    for p, (i, j) in zip(patches, product(range(n_h), range(n_w))):
+        img[i * step:i * step + p_h, j * step:j * step + p_w] += p
+    #for p, (i, j) in zip(patches, product(range(n_h), range(n_w))):
+        patch_count[i * step:i * step + p_h, j * step:j * step + p_w] += 1
+    print('MAX time seen', np.amax(patch_count))
+    return img/patch_count
 
-def predict(x, model, patch_sz=160, n_classes=5):
-    print('\n\n', np.shape(x))
-    patches = view_as_windows(x, (patch_sz, patch_sz, x.ndim), step = patch_sz//5)
+def predict(x, model, patch_sz=160, n_classes=5, step = 142):
+    dim_x, dim_y, dim = x.shape
+    patches = patchify(x, (patch_sz, patch_sz, x.ndim), step = step)
     width_window, height_window, z, width_x, height_y, num_channel = patches.shape
-    patches = np.reshape(patches, (width_window, height_window,  width_x, height_y, num_channel))
-    print(np.shape(patches))
+    patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, num_channel))
 
-    print(psutil.cpu_percent())
-    print(psutil.virtual_memory())  # physical memory usage
-    print('memory % used:', psutil.virtual_memory()[2])
-    predict_array = np.empty(shape=np.shape(patches))
-    print(np.shape(predict_array))
-    #for w in width_window:
+    patches_predict = model.predict(patches, batch_size=4)
 
-    patches_predict = model.predict(patches[0], batch_size=4)
-    print(np.shape(patches_predict), '\n\n\n')
-    return prediction[:img_height, :img_width, :]
+    prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
+
+    return prediction
 
 
 def picture_from_mask(mask):
@@ -107,20 +121,22 @@ def mask_from_picture(picture):
   picture = picture.dot(np.array([65536, 256, 1], dtype='int32'))
   return mask[picture]
 
-if __name__ == '__main__':
+def predict_all(step):
     model = get_model()
     model.load_weights(weights_path)
     test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
     accuracy_all = []
     for test_id in test:
-        path_img = './../data-mdias/Images/top_potsdam_{}_RGB.tif'.format(test_id)
+        #path_img = './../data-mdias/Images/top_potsdam_{}_RGB.tif'.format(test_id)
+        path_img = './potsdam/Images/top_potsdam_{}_RGB.tif'.format(test_id)
         img = tiff.imread(path_img)
-        path_mask = './../data-mdias/5_Labels_all/top_potsdam_{}_label.tif'.format(test_id)
+        #path_mask = './../data-mdias/5_Labels_all/top_potsdam_{}_label.tif'.format(test_id)
+        path_mask = './potsdam/5_Labels_all/top_potsdam_{}_label.tif'.format(test_id)
         label = tiff.imread(path_mask).transpose([2,0,1])
         gt = mask_from_picture(label)
 
-        mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES).transpose([2,0,1])
-        print('\n\nMask', np.shape(mask))
+        mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step).transpose([2,0,1])
+
         prediction = picture_from_mask(mask)
 
         target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
@@ -132,10 +148,16 @@ if __name__ == '__main__':
         print(report)
         print('\nAccuracy', accuracy)
         accuracy_all.append(accuracy)
+        tiff.imsave('./results/map_{}.tif'.format(test_id), prediction)
         gc.collect()
         gc.collect()
         gc.collect()
+        sys.stdout.flush()
 
     print(accuracy_all)
-    print('Accuracy all', sum(accuracy_all)/len(accuracy_all))
-    tiff.imsave('map.tif', prediction)
+    print(step,' Accuracy all', sum(accuracy_all)/len(accuracy_all))
+
+
+
+'8'
+predict_all(8)
