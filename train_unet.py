@@ -1,4 +1,4 @@
-from unet_model_leaky import *
+from unet_model import *
 from gen_patches import *
 from generator_unet import *
 from clr_callback import *
@@ -18,21 +18,28 @@ N_BANDS = 3
 N_CLASSES = 6  # buildings, roads, trees, crops and water
 N_EPOCHS = 50
 UPCONV = True
-PATCH_SZ = 128   # should divide by 16
-#PATCH_SZ = 160
-BATCH_SIZE = 180
-#BATCH_SIZE = 10
-STEPS_PER_EPOCH = 10000
-VALIDATION_STEPS = 2400
-MAX_QUEUE = 20
 
-TRAIN_IDS = ['2_10','2_11','3_10','3_11','4_10','4_11','5_10','5_11','6_7','6_8','6_9','6_10','6_11','7_7','7_8','7_9','7_10','7_11']
-VAL_IDS = ['2_12','3_12','4_12','5_12','6_12','7_12']
-#TRAIN_IDS = ['2_10']
-#VAL_IDS = ['2_12']
-
-path_img = '/tmp/potsdam/Images/top_potsdam_{}_RGB.tif'
-path_mask = '/home/mdias/deep-wnet/potsdam/Masks/top_potsdam_{}_label.tif'
+dataset = 'v'
+if dataset == 'p':
+    TRAIN_IDS = ['2_10','2_11','3_10','3_11','4_10','4_11','5_10','5_11','6_7','6_8','6_9','6_10','6_11','7_7','7_8','7_9','7_10','7_11']
+    VAL_IDS = ['2_12','3_12','4_12','5_12','6_12','7_12']
+    path_img = '/home/mdias/deep-wnet/potsdam/Images_lab/top_potsdam_{}_RGB.tif'
+    path_mask = '/home/mdias/deep-wnet/potsdam/Masks/top_potsdam_{}_label.tif'
+    PATCH_SZ = 320   # should divide by 16
+    BATCH_SIZE = 30
+    STEPS_PER_EPOCH = 10000
+    VALIDATION_STEPS = 2400
+    MAX_QUEUE = 20
+elif dataset == 'v':
+    TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']
+    VAL_IDS = ['5', '7', '23', '37']
+    path_img = '/tmp/vaihingen/Images_lab/top_mosaic_09cm_area{}.tif'
+    path_mask = '/tmp/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
+    PATCH_SZ = 320   # should divide by 16
+    BATCH_SIZE = 30
+    STEPS_PER_EPOCH = 4000
+    VALIDATION_STEPS = 1000
+    MAX_QUEUE = 20
 
 #path_img = './../data-mdias/Images/top_potsdam_{}_RGB.tif'
 #path_mask = './../data-mdias/Masks/top_potsdam_{}_label.tif'
@@ -40,7 +47,7 @@ path_mask = '/home/mdias/deep-wnet/potsdam/Masks/top_potsdam_{}_label.tif'
 def get_model():
     return unet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS, upconv=UPCONV)
 
-weights_path = 'weights_unet'
+weights_path = 'weights_unet_v'
 if not os.path.exists(weights_path):
     os.makedirs(weights_path)
 weights_path += '/unet_weights.hdf5'
