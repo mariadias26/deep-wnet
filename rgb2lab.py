@@ -8,7 +8,7 @@ from skimage.color import rgb2lab, lab2rgb
 dataset = input('Potsdam (p) or Vaihingen (v) dataset? ')
 while True:
     if dataset == 'p':
-        path_img = '/tmp/potsdam/Images/'
+        path_img = './potsdam/Images/'
         new_path_img = './potsdam/Images_lab/'
         break
     elif dataset == 'v':

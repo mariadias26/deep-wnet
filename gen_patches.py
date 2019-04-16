@@ -1,6 +1,6 @@
 import random
 import numpy as np
-import cv2
+#import cv2
 
 '''
 def brightness_augment(img, factor=1):
