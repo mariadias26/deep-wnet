@@ -27,4 +27,7 @@ for f in files:
     if '.tif' in f:
         img = tiff.imread(path_img+f)
         new_img = rgb2lab(img)
+        new_img[:,:,0] = new_img[:,:,0]/100
+        new_img[:,:,1] = np.interp(new_img[:,:,1], (-128, 128), (0, 1))
+        new_img[:,:,2] = np.interp(new_img[:,:,2], (-128, 128), (0, 1))
         tiff.imsave(new_path_img+f, new_img)
