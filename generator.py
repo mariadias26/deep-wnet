@@ -12,8 +12,11 @@ def get_mask(path):
     return mask
 
 def image_generator(ids_file, path_image, path_mask, batch_size = 5, patch_size = 160):
+    ids_file_all = ids_file[:]
     while True:
-        id = np.random.choice(ids_file)
+        if not ids_file:
+            ids_file = ids_file_all[:]
+        id = ids_file.pop(np.random.choice(len(ids_file)))
         image = get_input(path_image.format(id))
         mask = get_mask(path_mask.format(id))
         total_patches = 0

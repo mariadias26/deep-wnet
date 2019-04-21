@@ -6,9 +6,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tifffile as tiff
 from train_unet import weights_path, get_model, PATCH_SZ, N_CLASSES
+import get_step
 from scipy import stats
 from sklearn.metrics import classification_report, accuracy_score
 import gc
+import cv2
 from skimage.util.shape import view_as_windows
 import time
 from itertools import product
@@ -33,9 +35,10 @@ def reconstruct_patches(patches, image_size, step):
     print('MAX time seen', np.amax(patch_count))
     return img/patch_count
 
-def predict(x, model, patch_sz=160, n_classes=5, step = 142):
+def predict(x, model, patch_sz=160, n_classes=5, step = 142, padding_x = padding_x, padding_y = padding_y, step_x = step_x, step_y = step_y):
     dim_x, dim_y, dim = x.shape
-    patches = patchify(x, (patch_sz, patch_sz, x.ndim), step = step)
+    image = cv2.copyMakeBorder( x, 0, padding_x, 0, padding_y, cv2.BORDER_CONSTANT)
+    patches = patchify(image, (patch_sz, patch_sz, x.ndim), step = step)
     width_window, height_window, z, width_x, height_y, num_channel = patches.shape
     patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, num_channel))
 
@@ -89,6 +92,10 @@ def predict_all(step, dataset):
         test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
         dir_img = './potsdam/Images_lab/top_potsdam_{}_RGB.tif'
         dir_mask = './potsdam/Masks/top_potsdam_{}_label.tif'
+    if dataset == 'v':
+        test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
+        dir_img = './vaihingen/test/Images_lab/top_mosaic_09cm_area{}.tif'
+        dir_mask = './vaihingen/Ground_Truth/top_mosaic_09cm_area{}.tif'
     accuracy_all = []
     for test_id in test:
         path_img = dir_img.format(test_id)
@@ -97,14 +104,16 @@ def predict_all(step, dataset):
         label = tiff.imread(path_mask).transpose([2,0,1])
         gt = mask_from_picture(label)
 
-        mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step).transpose([2,0,1])
+        padding_x, padding_y, step_x, step_y = get_step(test_id)
+        mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step, padding_x = padding_x, padding_y = padding_y, step_x = step_x, step_y = step_y).transpose([2,0,1])
 
         prediction = picture_from_mask(mask)
 
         target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
+        labels = list(range(len(target_labels)))
         y_true = gt.ravel()
         y_pred = np.argmax(mask, axis=0).ravel()
-        report = classification_report(y_true, y_pred, target_names = target_labels)
+        report = classification_report(y_true, y_pred, target_names = target_labels, labels = labels)
         accuracy = accuracy_score(y_true, y_pred)
         print('\n',test_id)
         print(report)
@@ -121,5 +130,6 @@ def predict_all(step, dataset):
 
 
 
-'8'
-predict_all(284, 'p')
+step = 20
+print(step)
+predict_all(step, 'v')
