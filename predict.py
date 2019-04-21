@@ -40,9 +40,7 @@ def predict(x, model, patch_sz=160, n_classes=5, step = 142):
     patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, num_channel))
 
     patches_predict = model.predict(patches, batch_size=4)
-
     prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
-
     return prediction
 
 
@@ -88,7 +86,7 @@ def predict_all(step, dataset):
     if dataset == 'p':
         test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
         dir_img = './potsdam/Images_lab/top_potsdam_{}_RGB.tif'
-        dir_mask = './potsdam/Masks/top_potsdam_{}_label.tif'
+        dir_mask = './potsdam/5_Labels_all/top_potsdam_{}_label.tif'
     accuracy_all = []
     for test_id in test:
         path_img = dir_img.format(test_id)
@@ -121,5 +119,5 @@ def predict_all(step, dataset):
 
 
 
-'8'
-predict_all(284, 'p')
+'40'
+predict_all(40, 'p')

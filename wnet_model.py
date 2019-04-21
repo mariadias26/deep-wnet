@@ -136,7 +136,7 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
 
     #-------------Second UNet
     #Block12
-    conv10 = Conv2D(n_filters, (3, 3),  padding='same', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(actv9)
+    conv10 = Conv2D(n_filters, (3, 3),  padding='same', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(output1)
     actv10 = LeakyReLU()(conv10)
     conv10 = Conv2D(n_filters, (3, 3), padding='same', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(actv10)
     actv10 = LeakyReLU()(conv10)
