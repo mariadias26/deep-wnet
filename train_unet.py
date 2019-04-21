@@ -5,7 +5,6 @@ from clr_callback import *
 import os.path
 import numpy as np
 import tifffile as tiff
-import rasterio
 import glob
 import gc
 
@@ -19,7 +18,7 @@ N_CLASSES = 6  # buildings, roads, trees, crops and water
 N_EPOCHS = 50
 UPCONV = True
 
-dataset = 'v'
+dataset = 'p'
 if dataset == 'p':
     TRAIN_IDS = ['2_10','2_11','3_10','3_11','4_10','4_11','5_10','5_11','6_7','6_8','6_9','6_10','6_11','7_7','7_8','7_9','7_10','7_11']
     VAL_IDS = ['2_12','3_12','4_12','5_12','6_12','7_12']
@@ -47,7 +46,7 @@ elif dataset == 'v':
 def get_model():
     return unet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS, upconv=UPCONV)
 
-weights_path = 'weights_unet_v'
+weights_path = 'weights_unet2'
 if not os.path.exists(weights_path):
     os.makedirs(weights_path)
 weights_path += '/unet_weights.hdf5'
