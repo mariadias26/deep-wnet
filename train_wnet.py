@@ -51,7 +51,6 @@ def get_model():
   return model
 
 weights_path = 'weights_wnet2'
-weights_path = 'weights_wnet_potsdam'
 if not os.path.exists(weights_path):
     os.makedirs(weights_path)
 
