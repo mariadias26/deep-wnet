@@ -1,0 +1,56 @@
+nohup: ignoring input
+2019-04-23 20:01:12.967637: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2019-04-23 20:01:13.041062: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:964] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-04-23 20:01:13.041479: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 0 with properties: 
+name: TITAN Xp major: 6 minor: 1 memoryClockRate(GHz): 1.582
+pciBusID: 0000:01:00.0
+totalMemory: 11.91GiB freeMemory: 11.72GiB
+2019-04-23 20:01:13.041490: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-04-23 20:01:13.212135: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-04-23 20:01:13.212163: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-04-23 20:01:13.212168: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-04-23 20:01:13.212353: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 12194 MB memory) -> physical GPU (device: 0, name: TITAN Xp, pci bus id: 0000:01:00.0, compute capability: 6.1)
+2019-04-23 20:01:13.235005: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-04-23 20:01:13.235024: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-04-23 20:01:13.235029: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-04-23 20:01:13.235032: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-04-23 20:01:13.235199: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 12194 MB memory) -> physical GPU (device: 0, name: TITAN Xp, pci bus id: 0000:01:00.0, compute capability: 6.1)
+2019-04-23 20:01:13.247087: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 11.91G (12786401280 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-04-23 20:02:02.507838: W tensorflow/core/common_runtime/bfc_allocator.cc:211] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.98GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
+2019-04-23 20:02:02.571132: W tensorflow/core/common_runtime/bfc_allocator.cc:211] Allocator (GPU_0_bfc) ran out of memory trying to allocate 3.96GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
+2019-04-23 20:02:02.601012: W tensorflow/core/common_runtime/bfc_allocator.cc:211] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.76GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
+2019-04-23 20:02:02.666067: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 1.19G (1278640128 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-04-23 20:02:02.666107: W tensorflow/core/common_runtime/bfc_allocator.cc:211] Allocator (GPU_0_bfc) ran out of memory trying to allocate 675.14MiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
+2019-04-23 20:02:02.701927: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 1.19G (1278640128 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-04-23 20:02:02.701961: W tensorflow/core/common_runtime/bfc_allocator.cc:211] Allocator (GPU_0_bfc) ran out of memory trying to allocate 900.14MiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
+2019-04-23 20:02:02.750245: W tensorflow/core/common_runtime/bfc_allocator.cc:211] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.32GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
+2019-04-23 20:02:02.832479: W tensorflow/core/common_runtime/bfc_allocator.cc:211] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.76GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
+2019-04-23 20:02:02.887886: W tensorflow/core/common_runtime/bfc_allocator.cc:211] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.09GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
+2019-04-23 20:02:02.915283: W tensorflow/core/common_runtime/bfc_allocator.cc:211] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.39GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
+2019-04-23 20:02:03.085943: W tensorflow/core/common_runtime/bfc_allocator.cc:211] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.22GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
+start train net
+Epoch 1/50
+
+    1/10000 [..............................] - ETA: 113:12:16 - loss: 0.6437 - output1_loss: 0.6852 - output2_loss: 0.2707
+    2/10000 [..............................] - ETA: 73:23:10 - loss: 0.5702 - output1_loss: 0.6040 - output2_loss: 0.2664 
+    3/10000 [..............................] - ETA: 63:34:04 - loss: 0.5211 - output1_loss: 0.5502 - output2_loss: 0.2587
+    4/10000 [..............................] - ETA: 48:12:53 - loss: 0.5070 - output1_loss: 0.5351 - output2_loss: 0.2536
+    5/10000 [..............................] - ETA: 47:24:36 - loss: 0.5095 - output1_loss: 0.5384 - output2_loss: 0.2495
+    6/10000 [..............................] - ETA: 39:51:48 - loss: 0.4741 - output1_loss: 0.4995 - output2_loss: 0.2457
+    7/10000 [..............................] - ETA: 37:47:58 - loss: 0.4689 - output1_loss: 0.4938 - output2_loss: 0.2448
+    8/10000 [..............................] - ETA: 38:34:37 - loss: 0.4515 - output1_loss: 0.4749 - output2_loss: 0.2410
+    9/10000 [..............................] - ETA: 39:12:29 - loss: 0.4318 - output1_loss: 0.4531 - output2_loss: 0.2402
+   10/10000 [..............................] - ETA: 39:37:14 - loss: 0.4148 - output1_loss: 0.4341 - output2_loss: 0.2405
+   11/10000 [..............................] - ETA: 40:02:55 - loss: 0.4089 - output1_loss: 0.4277 - output2_loss: 0.2392
+   12/10000 [..............................] - ETA: 40:23:29 - loss: 0.4007 - output1_loss: 0.4188 - output2_loss: 0.2373
+   13/10000 [..............................] - ETA: 40:41:47 - loss: 0.3923 - output1_loss: 0.4097 - output2_loss: 0.2355
+   14/10000 [..............................] - ETA: 40:55:38 - loss: 0.4046 - output1_loss: 0.4236 - output2_loss: 0.2343
+   15/10000 [..............................] - ETA: 41:08:31 - loss: 0.4089 - output1_loss: 0.4283 - output2_loss: 0.2340
+   16/10000 [..............................] - ETA: 41:21:21 - loss: 0.4023 - output1_loss: 0.4211 - output2_loss: 0.2331
+   17/10000 [..............................] - ETA: 40:49:05 - loss: 0.4027 - output1_loss: 0.4214 - output2_loss: 0.2338
+   18/10000 [..............................] - ETA: 38:39:28 - loss: 0.3986 - output1_loss: 0.4170 - output2_loss: 0.2327
+   19/10000 [..............................] - ETA: 36:44:09 - loss: 0.3912 - output1_loss: 0.4088 - output2_loss: 0.2328
+   20/10000 [..............................] - ETA: 35:00:38 - loss: 0.3861 - output1_loss: 0.4032 - output2_loss: 0.2328
+   21/10000 [..............................] - ETA: 33:27:00 - loss: 0.3815 - output1_loss: 0.3981 - output2_loss: 0.2319
+   22/10000 [..............................] - ETA: 32:01:22 - loss: 0.3808 - output1_loss: 0.3974 - output2_loss: 0.2314
+   23/10000 [..............................] - ETA: 30:42:52 - loss: 0.3732 - output1_loss: 0.3891 - output2_loss: 0.2308

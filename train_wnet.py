@@ -12,7 +12,7 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.8)
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 N_BANDS = 3
@@ -51,7 +51,7 @@ def get_model():
   return model
 
 #weights_path = 'weights_wnet2'
-weights_path = 'weights_wnet_potsdam'
+weights_path = 'weights_wnet_potsdam_2'
 if not os.path.exists(weights_path):
     os.makedirs(weights_path)
 
