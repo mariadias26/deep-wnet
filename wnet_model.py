@@ -132,7 +132,7 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     conv9 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv11_2')(actv9)
     actv9 = LeakyReLU(name = 'actv11_2')(conv9)
 
-    output1 = Conv2D(n_classes, (1, 1), activation='sigmoid', name = 'output1')(actv9)
+    output1 = Conv2D(n_classes, (1, 1), activation='softmax', name = 'output1')(actv9)
 
     #-------------Second UNet
     #Block12
@@ -140,7 +140,8 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     actv10 = LeakyReLU()(conv10)
     conv10 = Conv2D(n_filters, (3, 3), padding='same', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(actv10)
     actv10 = LeakyReLU()(conv10)
-    actv10 = Add()([actv10, actv1])
+    #Skip
+    actv10 = concatenate([Add()([actv10, actv9]), actv9])
     pool10 = MaxPooling2D(pool_size=(2, 2))(actv10)
 
     #Block13
@@ -153,7 +154,7 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     conv11 = Conv2D(n_filters, (3, 3), padding='same', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(actv11)
     actv11 = LeakyReLU()(conv11)
     #Skip
-    actv11 = Add()([actv11, actv2])
+    actv11 = concatenate([Add()([actv11, actv8]), actv8])
     pool11 = MaxPooling2D(pool_size=(2, 2))(actv11)
     pool11 = Dropout(droprate)(pool11)
 
@@ -166,7 +167,8 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     actv12 = LeakyReLU()(conv12)
     conv12 = Conv2D(n_filters, (3, 3), padding='same', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(actv12)
     actv12 = LeakyReLU()(conv12)
-    actv12 = Add()([actv12, actv3])
+    #Skip
+    actv12 = concatenate([Add()([actv12, actv7]), actv7])
     pool12 = MaxPooling2D(pool_size=(2, 2))(actv12)
     pool12 = Dropout(droprate)(pool12)
 
@@ -178,7 +180,8 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     actv13_0 = LeakyReLU()(conv13_0)
     conv13_0 = Conv2D(n_filters, (3, 3), padding='same', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(actv13_0)
     actv13_0 = LeakyReLU()(conv13_0)
-    actv13_0 = Add()([actv13_0, actv4_0])
+    #Skip
+    actv13_0 = concatenate([Add()([actv13_0, actv6_2]), actv6_2])
     pool13_1 = MaxPooling2D(pool_size=(2, 2))(actv13_0)
     pool13_1 = Dropout(droprate)(pool13_1)
 
@@ -190,7 +193,8 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     actv13_1 = LeakyReLU()(conv13_1)
     conv13_1 = Conv2D(n_filters, (3, 3), padding='same', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(actv13_1)
     actv13_1 = LeakyReLU()(conv13_1)
-    actv13_1 = Add()([actv13_1, actv4_1])
+    #Skip
+    actv13_1 = concatenate([Add()([actv13_1, actv6_1]), actv6_1])
     pool13_2 = MaxPooling2D(pool_size=(2, 2))(actv13_1)
     pool13_2 = Dropout(droprate)(pool13_2)
 
@@ -291,5 +295,5 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
             dice -= dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
         return dice/n_classes
 
-    model.compile(optimizer=Adam(), loss=[dice_coef_multilabel, mean_squared_error], loss_weights  = [0.9, 0.1])
+    model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef_multilabel, mean_squared_error], loss_weights  = [0.9, 0.1])
     return model
