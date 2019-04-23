@@ -9,7 +9,7 @@ import sys
 import numpy as np
 import tensorflow as tf
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.8)
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 '''
 def check_output(step, dataset):
@@ -48,6 +48,7 @@ def reconstruct_patches(patches, image_size, step):
     i_h, i_w = image_size[:2]
     p_h, p_w = patches.shape[1:3]
     print('image_size', image_size)
+    print('patches shape', patches.shape)
     img = np.zeros(image_size)
     patch_count = np.zeros(image_size)
     # compute the dimensions of the patches array
@@ -67,12 +68,13 @@ def predict(x, model, patch_sz=160, n_classes=5, step = 142):
     width_window, height_window, z, width_x, height_y, num_channel = patches.shape
     patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, num_channel))
 
-    patches_predict = model.predict(patches, batch_size=50)
-    patches_predict = patches_predict[0]
-    #prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, dim), step)
-    prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
-
-    return prediction
+    predict = model.predict(patches, batch_size=50)
+    patches_predict = predict[0]
+    image_predict = predict[1]
+    #prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
+    new_image = reconstruct_patches(image_predict, (dim_x, dim_y, dim), step)
+    return new_image
+    #return prediction, new_image
 
 
 def picture_from_mask(mask):
@@ -133,20 +135,23 @@ def predict_all(step, dataset):
         label = tiff.imread(path_mask).transpose([2,0,1])
         gt = mask_from_picture(label)
 
-        mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step).transpose([2,0,1])
+        #mask, new_image = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step)
+        new_image = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step)
+        #mask = mask.transpose([2,0,1])
         prediction = picture_from_mask(mask)
 
         target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
-        y_true = gt.ravel()
-        y_pred = np.argmax(mask, axis=0).ravel()
-        report = classification_report(y_true, y_pred, target_names = target_labels)
-        accuracy = accuracy_score(y_true, y_pred)
+        #y_true = gt.ravel()
+        #y_pred = np.argmax(mask, axis=0).ravel()
+        #report = classification_report(y_true, y_pred, target_names = target_labels)
+        #accuracy = accuracy_score(y_true, y_pred)
         print('\n',test_id)
-        print(report)
-        print('\nAccuracy', accuracy)
-        accuracy_all.append(accuracy)
-        tiff.imsave('./results/prediction_{}.tif'.format(test_id), prediction)
-        tiff.imsave('./results/mask_{}.tif'.format(test_id), mask)
+        #print(report)
+        #print('\nAccuracy', accuracy)
+        #accuracy_all.append(accuracy)
+        #tiff.imsave('./results/prediction_{}.tif'.format(test_id), prediction)
+        #tiff.imsave('./results/mask_{}.tif'.format(test_id), mask)
+        tiff.imsave('./results/lab/image_{}.tif'.format(test_id), new_image)
         gc.collect()
         gc.collect()
         gc.collect()
@@ -155,7 +160,7 @@ def predict_all(step, dataset):
     print(accuracy_all)
     print(step,' Accuracy all', sum(accuracy_all)/len(accuracy_all))
 
-step = 40
+step = 80
 dataset = 'p'
 print(step)
 predict_all(step, dataset)

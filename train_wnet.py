@@ -50,7 +50,7 @@ def get_model():
   model = wnet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS, upconv=UPCONV)
   return model
 
-weights_path = 'weights_wnet2'
+#weights_path = 'weights_wnet2'
 weights_path = 'weights_wnet_potsdam'
 if not os.path.exists(weights_path):
     os.makedirs(weights_path)
