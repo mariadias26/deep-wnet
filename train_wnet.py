@@ -18,8 +18,6 @@ sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 N_BANDS = 3
 N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
 N_EPOCHS = 50
-UPCONV = True
-
 
 dataset = 'p'
 load_unet = True
@@ -47,12 +45,12 @@ elif dataset == 'v':
 
 
 def get_model():
-  model = wnet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS, upconv=UPCONV)
+  model = wnet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
   return model
 
 
 #weights_path = 'weights_wnet2'
-weights_path = 'weights_wnet_potsdam_2'
+weights_path = 'weights_wnet_potsdam_3'
 if not os.path.exists(weights_path):
     os.makedirs(weights_path)
 
