@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import tifffile as tiff
-from train_unet import weights_path, get_model, PATCH_SZ, N_CLASSES
+from train_unet_v import weights_path, get_model, PATCH_SZ, N_CLASSES
 import get_step
 from scipy import stats
 from sklearn.metrics import classification_report, accuracy_score
@@ -37,15 +37,13 @@ def reconstruct_patches(patches, image_size, step):
 
 def predict(x, model, patch_sz=160, n_classes=5, step = 142, padding_x = padding_x, padding_y = padding_y, step_x = step_x, step_y = step_y):
     dim_x, dim_y, dim = x.shape
-    image = cv2.copyMakeBorder( x, 0, padding_x, 0, padding_y, cv2.BORDER_CONSTANT)
-    patches = patchify(image, (patch_sz, patch_sz, x.ndim), step = step)
+    patches = patchify(x, (patch_sz, patch_sz, x.ndim), step = step)
     width_window, height_window, z, width_x, height_y, num_channel = patches.shape
     patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, num_channel))
 
     patches_predict = model.predict(patches, batch_size=4)
     prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
     return prediction
-
 
 def picture_from_mask(mask):
     colors = {
@@ -88,16 +86,14 @@ def predict_all(step, dataset):
     model.load_weights(weights_path)
     if dataset == 'p':
         test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
-        dir_img = './potsdam/Images_lab/top_potsdam_{}_RGB.tif'
-<<<<<<< HEAD
-        dir_mask = './potsdam/5_Labels_all/top_potsdam_{}_label.tif'
-=======
-        dir_mask = './potsdam/Masks/top_potsdam_{}_label.tif'
-    if dataset == 'v':
+        path_i = '/home/mdias/deep-wnet/potsdam/Images_lab/top_potsdam_{}_RGB.tif'
+        path_m = './potsdam/5_Labels_all/top_potsdam_{}_label.tif'
+
+    elif dataset == 'v':
         test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
-        dir_img = './vaihingen/test/Images_lab/top_mosaic_09cm_area{}.tif'
-        dir_mask = './vaihingen/Ground_Truth/top_mosaic_09cm_area{}.tif'
->>>>>>> 871879ced70982883180b080c7e4668d74bc3099
+        path_i = './vaihingen/test/Images_lab/top_mosaic_09cm_area{}.tif'
+        path_m = './vaihingen/test/Masks/top_mosaic_09cm_area{}.tif'
+
     accuracy_all = []
     for test_id in test:
         path_img = dir_img.format(test_id)
@@ -105,10 +101,12 @@ def predict_all(step, dataset):
         path_mask = dir_mask.format(test_id)
         label = tiff.imread(path_mask).transpose([2,0,1])
         gt = mask_from_picture(label)
-
-        padding_x, padding_y, step_x, step_y = get_step(test_id)
-        mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step, padding_x = padding_x, padding_y = padding_y, step_x = step_x, step_y = step_y).transpose([2,0,1])
-
+        if dataset == 'v':
+            step, x_padding, y_padding, x_original, y_original = get_step(test_id)
+            img = cv2.copyMakeBorder(img, 0, x_padding-x_original, 0, y_padding-y_original, cv2.BORDER_CONSTANT)
+        mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step).transpose([2,0,1])
+        if dataset == 'v':
+            mask = mask[:x_original, :y_original, ]
         prediction = picture_from_mask(mask)
 
         target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
