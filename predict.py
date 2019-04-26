@@ -5,8 +5,8 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import tifffile as tiff
-from train_unet_v import weights_path, get_model, PATCH_SZ, N_CLASSES
-import get_step
+from train_wnet import wnet_weights, get_model, PATCH_SZ, N_CLASSES
+from get_step import find_step
 from scipy import stats
 from sklearn.metrics import classification_report, accuracy_score
 import gc
@@ -34,8 +34,8 @@ def reconstruct_patches(patches, image_size, step):
         patch_count[i * step:i * step + p_h, j * step:j * step + p_w] += 1
     print('MAX time seen', np.amax(patch_count))
     return img/patch_count
-
-def predict(x, model, patch_sz=160, n_classes=5, step = 142, padding_x = padding_x, padding_y = padding_y, step_x = step_x, step_y = step_y):
+'''
+def predict(x, model, patch_sz=160, n_classes=5, step = 142):
     dim_x, dim_y, dim = x.shape
     patches = patchify(x, (patch_sz, patch_sz, x.ndim), step = step)
     width_window, height_window, z, width_x, height_y, num_channel = patches.shape
@@ -44,6 +44,20 @@ def predict(x, model, patch_sz=160, n_classes=5, step = 142, padding_x = padding
     patches_predict = model.predict(patches, batch_size=4)
     prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
     return prediction
+'''
+def predict(x, model, patch_sz=160, n_classes=5, step = 142):
+    dim_x, dim_y, dim = x.shape
+    print('dim', dim_x, dim_y, dim)
+    patches = patchify(x, (patch_sz, patch_sz, x.ndim), step = step)
+    width_window, height_window, z, width_x, height_y, num_channel = patches.shape
+    patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, num_channel))
+
+    predict = model.predict(patches, batch_size=50)
+    patches_predict = predict[0]
+    #image_predict = predict[1]
+    prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
+    #new_image = reconstruct_patches(image_predict, (dim_x, dim_y, dim), step)
+    return prediction#, new_image
 
 def picture_from_mask(mask):
     colors = {
@@ -83,7 +97,8 @@ def mask_from_picture(picture):
 
 def predict_all(step, dataset):
     model = get_model()
-    model.load_weights(weights_path)
+    print(wnet_weights)
+    model.load_weights(wnet_weights)
     if dataset == 'p':
         test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
         path_i = '/home/mdias/deep-wnet/potsdam/Images_lab/top_potsdam_{}_RGB.tif'
@@ -92,21 +107,25 @@ def predict_all(step, dataset):
     elif dataset == 'v':
         test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
         path_i = './vaihingen/test/Images_lab/top_mosaic_09cm_area{}.tif'
-        path_m = './vaihingen/test/Masks/top_mosaic_09cm_area{}.tif'
+        path_m = './vaihingen/Ground_Truth/top_mosaic_09cm_area{}.tif'
 
     accuracy_all = []
     for test_id in test:
-        path_img = dir_img.format(test_id)
+        path_img = path_i.format(test_id)
         img = tiff.imread(path_img)
-        path_mask = dir_mask.format(test_id)
+        path_mask = path_m.format(test_id)
         label = tiff.imread(path_mask).transpose([2,0,1])
         gt = mask_from_picture(label)
         if dataset == 'v':
-            step, x_padding, y_padding, x_original, y_original = get_step(test_id)
+            step, x_padding, y_padding, x_original, y_original = find_step(img, PATCH_SZ, test_id)
+            print('Step: ', step, x_padding, y_padding, x_original, y_original)
             img = cv2.copyMakeBorder(img, 0, x_padding-x_original, 0, y_padding-y_original, cv2.BORDER_CONSTANT)
         mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step).transpose([2,0,1])
+        print(mask.shape)
         if dataset == 'v':
+            mask = mask.transpose([1,2,0])
             mask = mask[:x_original, :y_original, ]
+            mask = mask.transpose([2,0,1])
         prediction = picture_from_mask(mask)
 
         target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
@@ -119,7 +138,10 @@ def predict_all(step, dataset):
         print(report)
         print('\nAccuracy', accuracy)
         accuracy_all.append(accuracy)
-        tiff.imsave('./results/map_{}.tif'.format(test_id), prediction)
+        #tiff.imsave('./results/vaihingen/prediction/map_{}.tif'.format(test_id), prediction)
+        #tiff.imsave('./results/vaihingen/mask/mask_{}.tif'.format(test_id), mask)
+        tiff.imsave('./results/potsdam/prediction/map_{}.tif'.format(test_id), prediction)
+        tiff.imsave('./results/potsdam/mask/mask_{}.tif'.format(test_id), mask)
         gc.collect()
         gc.collect()
         gc.collect()
@@ -131,6 +153,6 @@ def predict_all(step, dataset):
 
 
 
-step = 20
+step = 142
 print(step)
-predict_all(step, 'v')
+predict_all(step, 'p')

@@ -1,9 +1,11 @@
-from train_wnet import wnet_weights, get_model, PATCH_SZ, N_CLASSES
+from train_wnet_v import wnet_weights, get_model, PATCH_SZ, N_CLASSES
+from get_step import find_step
 from patchify import patchify, unpatchify
 from scipy import stats
 from sklearn.metrics import classification_report, accuracy_score
 from itertools import product
 import tifffile as tiff
+import cv2
 import gc
 import sys
 import numpy as np
@@ -70,11 +72,10 @@ def predict(x, model, patch_sz=160, n_classes=5, step = 142):
 
     predict = model.predict(patches, batch_size=50)
     patches_predict = predict[0]
-    image_predict = predict[1]
-    #prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
-    new_image = reconstruct_patches(image_predict, (dim_x, dim_y, dim), step)
-    return new_image
-    #return prediction, new_image
+    #image_predict = predict[1]
+    prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
+    #new_image = reconstruct_patches(image_predict, (dim_x, dim_y, dim), step)
+    return prediction#, new_image
 
 
 def picture_from_mask(mask):
@@ -125,7 +126,7 @@ def predict_all(step, dataset):
     elif dataset == 'v':
         test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
         path_i = './vaihingen/test/Images_lab/top_mosaic_09cm_area{}.tif'
-        path_m = './vaihingen/test/Masks/top_mosaic_09cm_area{}.tif'
+        path_m = './vaihingen/Ground_Truth/top_mosaic_09cm_area{}.tif'
 
     accuracy_all = []
     for test_id in test:
@@ -134,24 +135,33 @@ def predict_all(step, dataset):
         path_mask = path_m.format(test_id)
         label = tiff.imread(path_mask).transpose([2,0,1])
         gt = mask_from_picture(label)
-
+        if dataset == 'v':
+            step, x_padding, y_padding, x_original, y_original = find_step(img, PATCH_SZ, test_id)
+            print('Step: ', step, x_padding, y_padding, x_original, y_original)
+            img = cv2.copyMakeBorder(img, 0, x_padding-x_original, 0, y_padding-y_original, cv2.BORDER_CONSTANT)
         #mask, new_image = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step)
-        new_image = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step)
-        #mask = mask.transpose([2,0,1])
+        mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step)
+        if dataset == 'v':
+            print('oi')
+            mask = mask.transpose([1,2,0])
+            mask = mask[:x_original, :y_original, ]
+            mask = mask.transpose([2,0,1])
+        print('mask shape', mask.shape)
         prediction = picture_from_mask(mask)
-
         target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
-        #y_true = gt.ravel()
-        #y_pred = np.argmax(mask, axis=0).ravel()
-        #report = classification_report(y_true, y_pred, target_names = target_labels)
-        #accuracy = accuracy_score(y_true, y_pred)
+        labels = list(range(len(target_labels)))
+        y_true = gt.ravel()
+        print('y_true', y_true.shape)
+        y_pred = np.argmax(mask, axis=0).ravel()
+        report = classification_report(y_true, y_pred, target_names = target_labels, labels = labels)
+        accuracy = accuracy_score(y_true, y_pred)
         print('\n',test_id)
-        #print(report)
-        #print('\nAccuracy', accuracy)
-        #accuracy_all.append(accuracy)
-        #tiff.imsave('./results/prediction_{}.tif'.format(test_id), prediction)
-        #tiff.imsave('./results/mask_{}.tif'.format(test_id), mask)
-        tiff.imsave('./results/lab/image_{}.tif'.format(test_id), new_image)
+        print(report)
+        print('\nAccuracy', accuracy)
+        accuracy_all.append(accuracy)
+        tiff.imsave('./results/vaihingen/prediction/map_wnet_v_2_{}.tif'.format(test_id), prediction)
+        tiff.imsave('./results/vaihingen/mask/mask_wnet_v_2_{}.tif'.format(test_id), mask)
+        #tiff.imsave('./results/vaihingen/image_wnet_v_2_{}.tif'.format(test_id), new_image)
         gc.collect()
         gc.collect()
         gc.collect()
@@ -161,7 +171,7 @@ def predict_all(step, dataset):
     print(step,' Accuracy all', sum(accuracy_all)/len(accuracy_all))
 
 step = 80
-dataset = 'p'
+dataset = 'v'
 print(step)
 predict_all(step, dataset)
 #check_output(step, dataset)

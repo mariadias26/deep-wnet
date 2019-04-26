@@ -46,7 +46,7 @@ elif dataset == 'v':
 
 
 def get_model():
-  model = wnet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS, upconv=UPCONV)
+  model = wnet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
   return model
 
 weights_path = 'weights_wnet_vaihingen'
