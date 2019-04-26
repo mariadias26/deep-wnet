@@ -127,7 +127,8 @@ def predict_all(step, dataset):
             mask = mask[:x_original, :y_original, ]
             mask = mask.transpose([2,0,1])
         prediction = picture_from_mask(mask)
-
+        print(mask.shape)
+        print(gt.shape)
         target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
         labels = list(range(len(target_labels)))
         y_true = gt.ravel()
