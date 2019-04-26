@@ -27,17 +27,17 @@ if dataset == 'p':
     path_img = '/home/mdias/deep-wnet/potsdam/Images_lab/top_potsdam_{}_RGB.tif'
     path_mask = '/home/mdias/deep-wnet/potsdam/Masks/top_potsdam_{}_label.tif'
     PATCH_SZ = 320   # should divide by 16
-    BATCH_SIZE = 12
+    BATCH_SIZE = 14
     STEPS_PER_EPOCH = 10000
     VALIDATION_STEPS = 2400
-    MAX_QUEUE = 10
+    MAX_QUEUE = 30
 elif dataset == 'v':
     TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']
     VAL_IDS = ['5', '7', '23', '37']
     path_img = '/tmp/vaihingen/Images_lab/top_mosaic_09cm_area{}.tif'
     path_mask = '/tmp/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     PATCH_SZ = 320   # should divide by 16
-    BATCH_SIZE = 15
+    BATCH_SIZE = 12
     STEPS_PER_EPOCH = 4000
     VALIDATION_STEPS = 1000
     MAX_QUEUE = 10
