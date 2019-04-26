@@ -39,17 +39,17 @@ elif dataset == 'v':
     path_mask = './vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     PATCH_SZ = 320   # should divide by 16
     BATCH_SIZE = 10
-    STEPS_PER_EPOCH = 4000
-    VALIDATION_STEPS = 1000
+    STEPS_PER_EPOCH = 6000
+    VALIDATION_STEPS = 2000
     MAX_QUEUE = 10
 
 
 
 def get_model():
-  model = wnet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS, upconv=UPCONV)
+  model = wnet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
   return model
 
-weights_path = 'weights_wnet_vaihingen'
+weights_path = 'weights_wnet_vaihingen_3'
 if not os.path.exists(weights_path):
     os.makedirs(weights_path)
 
