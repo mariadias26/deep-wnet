@@ -1,0 +1,17 @@
+nohup: ignoring input
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/classification.py:1143: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/classification.py:1145: UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples.
+  'recall', 'true', average, warn_for)
+2
+{'imp surf': {'precision': 0.8224295064125026, 'recall': 0.9741092226094418, 'f1-score': 0.8918662917761836, 'support': 1498719}, 'car': {'precision': 0.923725812163946, 'recall': 0.7893035476016892, 'f1-score': 0.8512405889552349, 'support': 72697}, 'building': {'precision': 0.9604333824534169, 'recall': 0.9408797696354437, 'f1-score': 0.9505560287532555, 'support': 1438763}, 'background': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, 'low veg': {'precision': 0.8462808173545796, 'recall': 0.6988222640052079, 'f1-score': 0.7655151088656639, 'support': 1457797}, 'tree': {'precision': 0.8730358928588878, 'recall': 0.8830894030352353, 'f1-score': 0.8780338706533507, 'support': 1517510}, 'micro avg': {'precision': 0.8737531087701149, 'recall': 0.8737531087701149, 'f1-score': 0.873753108770115, 'support': 5985486}, 'macro avg': {'precision': 0.7376509018738888, 'recall': 0.7143673678145029, 'f1-score': 0.7228686481672814, 'support': 5985486}, 'weighted avg': {'precision': 0.8754719619920741, 'recall': 0.8737531087701149, 'f1-score': 0.871199973711594, 'support': 5985486}}
+0.8737531087701149 
+
+4
+{'imp surf': {'precision': 0.7980551001792446, 'recall': 0.9636834479619119, 'f1-score': 0.8730835701083868, 'support': 1298251}, 'car': {'precision': 0.8426406585915789, 'recall': 0.640328332636025, 'f1-score': 0.7276843833135225, 'support': 50193}, 'building': {'precision': 0.982543658188513, 'recall': 0.8991102319592439, 'f1-score': 0.9389772062221153, 'support': 2679350}, 'background': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, 'low veg': {'precision': 0.7118411552346571, 'recall': 0.4865705198508445, 'f1-score': 0.5780332888179538, 'support': 182360}, 'tree': {'precision': 0.7961496122298645, 'recall': 0.8998255354378218, 'f1-score': 0.8448186898240144, 'support': 213797}, 'micro avg': {'precision': 0.8981530310801363, 'recall': 0.8981530310801363, 'f1-score': 0.8981530310801363, 'support': 4423951}, 'macro avg': {'precision': 0.688538364070643, 'recall': 0.6482530113076411, 'f1-score': 0.6604328563809988, 'support': 4423951}, 'weighted avg': {'precision': 0.9066498694767152, 'recall': 0.8981530310801363, 'f1-score': 0.8978139020293875, 'support': 4423951}}
+0.8981530310801363 
+
+Traceback (most recent call last):
+  File "predict_noBoundary.py", line 75, in <module>
+    for i in all_reports.keys:
+AttributeError: 'list' object has no attribute 'keys'

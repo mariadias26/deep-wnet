@@ -1,0 +1,278 @@
+nohup: ignoring input
+2
+              precision    recall  f1-score   support
+
+    imp surf       0.84      0.96      0.89   1498719
+         car       0.92      0.86      0.89     72697
+    building       0.98      0.93      0.96   1438763
+  background       0.00      0.00      0.00    119917
+     low veg       0.81      0.83      0.82   1457797
+        tree       0.88      0.86      0.87   1517510
+
+   micro avg       0.88      0.88      0.88   6105403
+   macro avg       0.74      0.74      0.74   6105403
+weighted avg       0.86      0.88      0.87   6105403
+
+0.8752000482195852 
+
+4
+              precision    recall  f1-score   support
+
+    imp surf       0.80      0.97      0.88   1298251
+         car       0.91      0.68      0.78     50193
+    building       0.99      0.88      0.93   2679350
+  background       0.00      0.00      0.00         0
+     low veg       0.57      0.57      0.57    182360
+        tree       0.77      0.93      0.84    213797
+
+   micro avg       0.89      0.89      0.89   4423951
+   macro avg       0.67      0.67      0.67   4423951
+weighted avg       0.91      0.89      0.90   4423951
+
+0.8946111744908567 
+
+6
+              precision    recall  f1-score   support
+
+    imp surf       0.87      0.93      0.90   1093763
+         car       0.92      0.66      0.77     53971
+    building       0.98      0.87      0.92   1506293
+  background       0.00      0.00      0.00         0
+     low veg       0.66      0.81      0.73    426675
+        tree       0.95      0.95      0.95   1302479
+
+   micro avg       0.90      0.90      0.90   4383181
+   macro avg       0.73      0.70      0.71   4383181
+weighted avg       0.91      0.90      0.90   4383181
+
+0.9024448226071431 
+
+8
+              precision    recall  f1-score   support
+
+    imp surf       0.93      0.91      0.92   1371476
+         car       0.95      0.77      0.85     55953
+    building       0.98      0.93      0.95   1049855
+  background       0.00      0.00      0.00         0
+     low veg       0.75      0.94      0.84    851622
+        tree       0.98      0.87      0.92   1053827
+
+   micro avg       0.91      0.91      0.91   4382733
+   macro avg       0.77      0.74      0.75   4382733
+weighted avg       0.92      0.91      0.91   4382733
+
+0.908265230850248 
+
+10
+              precision    recall  f1-score   support
+
+    imp surf       0.94      0.86      0.90   1670514
+         car       0.77      0.88      0.82     22890
+    building       0.93      0.92      0.93   1048838
+  background       0.00      0.00      0.00         0
+     low veg       0.70      0.83      0.76    734200
+        tree       0.88      0.90      0.89    868702
+
+   micro avg       0.88      0.88      0.88   4345144
+   macro avg       0.70      0.73      0.72   4345144
+weighted avg       0.89      0.88      0.88   4345144
+
+0.8772827782002162 
+
+12
+              precision    recall  f1-score   support
+
+    imp surf       0.86      0.88      0.87    644252
+         car       0.99      0.94      0.96     16710
+    building       0.94      0.92      0.93    877106
+  background       0.00      0.00      0.00         0
+     low veg       0.84      0.77      0.80   1278111
+        tree       0.86      0.91      0.89   1676652
+
+   micro avg       0.87      0.87      0.87   4492831
+   macro avg       0.75      0.74      0.74   4492831
+weighted avg       0.87      0.87      0.87   4492831
+
+0.8689719243835345 
+
+14
+              precision    recall  f1-score   support
+
+    imp surf       0.91      0.83      0.87   1058310
+         car       0.63      0.93      0.75      8968
+    building       0.93      0.96      0.94    790477
+  background       0.00      0.00      0.00         0
+     low veg       0.72      0.84      0.77   1128592
+        tree       0.91      0.83      0.87   1534674
+
+   micro avg       0.86      0.86      0.86   4521021
+   macro avg       0.68      0.73      0.70   4521021
+weighted avg       0.86      0.86      0.86   4521021
+
+0.8563674001956638 
+
+16
+              precision    recall  f1-score   support
+
+    imp surf       0.89      0.86      0.87    689663
+         car       0.85      0.97      0.91      7258
+    building       0.96      0.94      0.95    818792
+  background       0.00      0.00      0.00         0
+     low veg       0.83      0.81      0.82   1357529
+        tree       0.86      0.90      0.88   1680716
+
+   micro avg       0.87      0.87      0.87   4553958
+   macro avg       0.73      0.75      0.74   4553958
+weighted avg       0.87      0.87      0.87   4553958
+
+0.8741121459618205 
+
+20
+              precision    recall  f1-score   support
+
+    imp surf       0.96      0.86      0.91    799362
+         car       0.65      0.89      0.76     11796
+    building       0.82      0.93      0.87    663838
+  background       0.00      0.00      0.00    112638
+     low veg       0.77      0.83      0.80    734587
+        tree       0.92      0.95      0.93   1660537
+
+   micro avg       0.88      0.88      0.88   3982758
+   macro avg       0.69      0.74      0.71   3982758
+weighted avg       0.86      0.88      0.87   3982758
+
+0.8779426216707116 
+
+22
+              precision    recall  f1-score   support
+
+    imp surf       0.91      0.92      0.92   1414467
+         car       0.82      0.83      0.83     35373
+    building       0.96      0.93      0.94    791989
+  background       0.00      0.00      0.00         0
+     low veg       0.82      0.81      0.81    851926
+        tree       0.91      0.92      0.92   1252092
+
+   micro avg       0.90      0.90      0.90   4345847
+   macro avg       0.74      0.74      0.74   4345847
+weighted avg       0.90      0.90      0.90   4345847
+
+0.9003018283892645 
+
+24
+              precision    recall  f1-score   support
+
+    imp surf       0.80      0.82      0.81    641585
+         car       0.83      0.93      0.88     12124
+    building       0.94      0.83      0.88    856780
+  background       0.00      0.00      0.00         0
+     low veg       0.85      0.90      0.87   1872573
+        tree       0.86      0.85      0.86   1118305
+
+   micro avg       0.86      0.86      0.86   4501367
+   macro avg       0.71      0.72      0.72   4501367
+weighted avg       0.86      0.86      0.86   4501367
+
+0.8624720001723921 
+
+27
+              precision    recall  f1-score   support
+
+    imp surf       0.87      0.95      0.91   1823189
+         car       0.97      0.83      0.89    140573
+    building       0.99      0.87      0.93   2089726
+  background       0.00      0.00      0.00     11238
+     low veg       0.79      0.79      0.79   1085078
+        tree       0.74      0.91      0.82    560050
+
+   micro avg       0.88      0.88      0.88   5709854
+   macro avg       0.73      0.72      0.72   5709854
+weighted avg       0.89      0.88      0.88   5709854
+
+0.8807375810309686 
+
+29
+              precision    recall  f1-score   support
+
+    imp surf       0.92      0.94      0.93   1955649
+         car       0.86      0.84      0.85     46264
+    building       0.96      0.95      0.95   1274014
+  background       0.00      0.00      0.00    122069
+     low veg       0.80      0.67      0.73    620772
+        tree       0.70      0.97      0.82    482471
+
+   micro avg       0.88      0.88      0.88   4501239
+   macro avg       0.71      0.73      0.71   4501239
+weighted avg       0.86      0.88      0.87   4501239
+
+0.8826587524012833 
+
+31
+              precision    recall  f1-score   support
+
+    imp surf       0.79      0.98      0.87   1811328
+         car       0.92      0.77      0.83    133564
+    building       0.97      0.78      0.86   1348800
+  background       0.00      0.00      0.00    140333
+     low veg       0.92      0.90      0.91    695698
+        tree       0.92      0.92      0.92    508706
+
+   micro avg       0.87      0.87      0.87   4638429
+   macro avg       0.75      0.72      0.73   4638429
+weighted avg       0.85      0.87      0.85   4638429
+
+0.8666936585641388 
+
+33
+              precision    recall  f1-score   support
+
+    imp surf       0.80      0.95      0.87   1435619
+         car       0.84      0.70      0.76     37022
+    building       0.91      0.75      0.82   1123011
+  background       0.00      0.00      0.00    186356
+     low veg       0.50      0.43      0.46    564795
+        tree       0.54      0.82      0.65    382272
+
+   micro avg       0.75      0.75      0.75   3729075
+   macro avg       0.60      0.61      0.60   3729075
+weighted avg       0.72      0.75      0.73   3729075
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/classification.py:1143: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/classification.py:1145: UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples.
+  'recall', 'true', average, warn_for)
+
+0.7494343771578743 
+
+35
+              precision    recall  f1-score   support
+
+    imp surf       0.91      0.85      0.88   1132396
+         car       0.89      0.78      0.83     26868
+    building       0.97      0.91      0.94   1296152
+  background       0.00      0.00      0.00         0
+     low veg       0.71      0.84      0.77   1125392
+        tree       0.83      0.80      0.82   1049703
+
+   micro avg       0.85      0.85      0.85   4630511
+   macro avg       0.72      0.70      0.71   4630511
+weighted avg       0.86      0.85      0.85   4630511
+
+0.8524584003795693 
+
+38
+              precision    recall  f1-score   support
+
+    imp surf       0.93      0.92      0.93   2333125
+         car       0.91      0.83      0.87     63209
+    building       0.97      0.89      0.93   2295624
+  background       0.00      0.00      0.00         0
+     low veg       0.80      0.88      0.84   2403078
+        tree       0.85      0.84      0.84   1649605
+
+   micro avg       0.89      0.89      0.89   8744641
+   macro avg       0.74      0.73      0.73   8744641
+weighted avg       0.89      0.89      0.89   8744641
+
+0.8856186320284618 
+
+ Accuracy all 0.8715043162766901

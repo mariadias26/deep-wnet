@@ -1,0 +1,48 @@
+nohup: ignoring input
+Unable to init server: Could not connect: Connection refused
+Unable to init server: Could not connect: Connection refused
+
+(predict.py:4553): Gdk-CRITICAL **: 19:34:39.998: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+
+(predict.py:4553): Gdk-CRITICAL **: 19:34:39.999: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+2019-04-25 19:34:44.192438: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2019-04-25 19:34:44.314900: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:964] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-04-25 19:34:44.315290: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 0 with properties: 
+name: TITAN Xp major: 6 minor: 1 memoryClockRate(GHz): 1.582
+pciBusID: 0000:01:00.0
+totalMemory: 11,91GiB freeMemory: 11,72GiB
+2019-04-25 19:34:44.315301: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-04-25 19:34:44.785238: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-04-25 19:34:44.785272: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-04-25 19:34:44.785279: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-04-25 19:34:44.785505: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 11343 MB memory) -> physical GPU (device: 0, name: TITAN Xp, pci bus id: 0000:01:00.0, compute capability: 6.1)
+tf.estimator package not installed.
+tf.estimator package not installed.
+20
+Step:  23 2551 3816 2550 3816
+MAX time seen 196.0
+(6, 2551, 3816)
+
+ 38
+              precision    recall  f1-score   support
+
+    imp surf       0.85      0.94      0.89   2593516
+         car       0.86      0.71      0.78     93108
+    building       0.96      0.85      0.90   2448506
+  background       0.00      0.00      0.00         0
+     low veg       0.80      0.81      0.81   2708217
+        tree       0.81      0.80      0.80   1887453
+
+   micro avg       0.85      0.85      0.85   9730800
+   macro avg       0.71      0.69      0.70   9730800
+weighted avg       0.86      0.85      0.85   9730800
+
+
+Accuracy 0.8525745056932627
+Using TensorFlow backend.
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/classification.py:1143: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/classification.py:1145: UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples.
+  'recall', 'true', average, warn_for)
+[0.8525745056932627]
+23  Accuracy all 0.8525745056932627

@@ -30,7 +30,7 @@ if dataset == 'p':
     BATCH_SIZE = 14
     STEPS_PER_EPOCH = 10000
     VALIDATION_STEPS = 2400
-    MAX_QUEUE = 30
+    MAX_QUEUE = 20
 elif dataset == 'v':
     TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']
     VAL_IDS = ['5', '7', '23', '37']
@@ -50,7 +50,7 @@ def get_model():
 
 
 #weights_path = 'weights_wnet2'
-weights_path = 'weights_wnet_potsdam_4'
+weights_path = 'weights_wnet_potsdam'
 if not os.path.exists(weights_path):
     os.makedirs(weights_path)
 
@@ -63,9 +63,10 @@ if __name__ == '__main__':
     def train_net():
             print("start train net")
             model = get_model()
+            #if unet load weights change order
+            model.load_weights( 'weights_unet2/unet_weights.hdf5', by_name = True)
             if os.path.isfile(wnet_weights):
                 model.load_weights(wnet_weights)
-            model.load_weights( 'weights_unet2/unet_weights.hdf5', by_name = True)
             early_stopping = EarlyStopping(monitor='val_loss', restore_best_weights = True, patience = 5, mode ='min')
             model_checkpoint = ModelCheckpoint(wnet_weights, monitor='val_loss', save_best_only=True, mode = 'min')
             csv_logger = CSVLogger('log_unet.csv', append=True, separator=';')

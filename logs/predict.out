@@ -1,0 +1,40 @@
+nohup: ignoring input
+Unable to init server: Could not connect: Connection refused
+Unable to init server: Could not connect: Connection refused
+
+(predict.py:7780): Gdk-CRITICAL **: 11:07:56.180: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+
+(predict.py:7780): Gdk-CRITICAL **: 11:07:56.181: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+2019-04-30 11:07:57.379870: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2019-04-30 11:07:57.463921: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:964] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-04-30 11:07:57.464381: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 0 with properties: 
+name: TITAN Xp major: 6 minor: 1 memoryClockRate(GHz): 1.582
+pciBusID: 0000:01:00.0
+totalMemory: 11,91GiB freeMemory: 11,72GiB
+2019-04-30 11:07:57.464393: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-04-30 11:07:57.630128: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-04-30 11:07:57.630157: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-04-30 11:07:57.630162: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-04-30 11:07:57.630343: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 12194 MB memory) -> physical GPU (device: 0, name: TITAN Xp, pci bus id: 0000:01:00.0, compute capability: 6.1)
+2019-04-30 11:07:57.714002: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-04-30 11:07:57.714034: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-04-30 11:07:57.714040: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-04-30 11:07:57.714043: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-04-30 11:07:57.714246: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 12194 MB memory) -> physical GPU (device: 0, name: TITAN Xp, pci bus id: 0000:01:00.0, compute capability: 6.1)
+2019-04-30 11:07:57.726650: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 11,91G (12786401280 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+Using TensorFlow backend.
+tf.estimator package not installed.
+tf.estimator package not installed.
+142
+weights_wnet_vaihingen/wnet_weights.hdf5
+Step:  17 2768 2428 2767 2428
+Traceback (most recent call last):
+  File "predict.py", line 161, in <module>
+    predict_all(step, 'v')
+  File "predict.py", line 125, in predict_all
+    mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step).transpose([2,0,1])
+  File "predict.py", line 46, in predict
+    prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
+  File "predict.py", line 26, in reconstruct_patches
+    p_h, p_w = patches.shape[1:3]
+AttributeError: 'list' object has no attribute 'shape'

@@ -1,0 +1,426 @@
+nohup: ignoring input
+Unable to init server: Could not connect: Connection refused
+Unable to init server: Could not connect: Connection refused
+
+(predict.py:8578): Gdk-CRITICAL **: 12:48:45.424: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+
+(predict.py:8578): Gdk-CRITICAL **: 12:48:45.424: gdk_cursor_new_for_display: assertion 'GDK_IS_DISPLAY (display)' failed
+2019-04-30 12:48:46.215695: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2019-04-30 12:48:46.295374: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:964] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2019-04-30 12:48:46.295776: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1432] Found device 0 with properties: 
+name: TITAN Xp major: 6 minor: 1 memoryClockRate(GHz): 1.582
+pciBusID: 0000:01:00.0
+totalMemory: 11,91GiB freeMemory: 11,72GiB
+2019-04-30 12:48:46.295788: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-04-30 12:48:46.462902: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-04-30 12:48:46.462932: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-04-30 12:48:46.462937: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-04-30 12:48:46.463131: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 12194 MB memory) -> physical GPU (device: 0, name: TITAN Xp, pci bus id: 0000:01:00.0, compute capability: 6.1)
+2019-04-30 12:48:46.548863: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1511] Adding visible gpu devices: 0
+2019-04-30 12:48:46.548897: I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-04-30 12:48:46.548902: I tensorflow/core/common_runtime/gpu/gpu_device.cc:988]      0 
+2019-04-30 12:48:46.548906: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1001] 0:   N 
+2019-04-30 12:48:46.549107: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 12194 MB memory) -> physical GPU (device: 0, name: TITAN Xp, pci bus id: 0000:01:00.0, compute capability: 6.1)
+2019-04-30 12:48:46.561792: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 11,91G (12786401280 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+tf.estimator package not installed.
+tf.estimator package not installed.
+142
+weights_wnet_vaihingen_3/wnet_weights.hdf5
+Step:  17 2768 2428 2767 2428
+dim 2768 2428 3
+MAX time seen 361.0
+(6, 2768, 2428)
+(6, 2767, 2428)
+(2767, 2428)
+
+ 2
+              precision    recall  f1-score   support
+
+    imp surf       0.74      0.95      0.83   1672969
+         car       0.90      0.67      0.77    104044
+    building       0.95      0.92      0.93   1533055
+  background       0.00      0.00      0.00    124230
+     low veg       0.81      0.68      0.74   1634290
+        tree       0.85      0.85      0.85   1649688
+
+   micro avg       0.83      0.83      0.83   6718276
+   macro avg       0.71      0.68      0.69   6718276
+weighted avg       0.82      0.83      0.82   6718276
+
+
+Accuracy 0.830567395563981
+Step:  16 2560 1888 2557 1887
+dim 2560 1888 3
+MAX time seen 400.0
+(6, 2560, 1888)
+(6, 2557, 1887)
+(2557, 1887)
+
+ 4
+              precision    recall  f1-score   support
+
+    imp surf       0.77      0.94      0.85   1466118
+         car       0.82      0.55      0.66     72838
+    building       0.97      0.88      0.92   2821435
+  background       0.00      0.00      0.00         0
+     low veg       0.67      0.45      0.54    223805
+        tree       0.77      0.85      0.81    240863
+
+   micro avg       0.87      0.87      0.87   4825059
+   macro avg       0.67      0.61      0.63   4825059
+weighted avg       0.88      0.87      0.87   4825059
+
+
+Accuracy 0.8729578228991604
+Step:  16 2560 1888 2557 1887
+dim 2560 1888 3
+MAX time seen 400.0
+(6, 2560, 1888)
+(6, 2557, 1887)
+(2557, 1887)
+
+ 6
+              precision    recall  f1-score   support
+
+    imp surf       0.85      0.89      0.87   1233825
+         car       0.83      0.47      0.60     79235
+    building       0.94      0.92      0.93   1601632
+  background       0.00      0.00      0.00         0
+     low veg       0.68      0.74      0.71    516263
+        tree       0.93      0.91      0.92   1394104
+
+   micro avg       0.88      0.88      0.88   4825059
+   macro avg       0.71      0.66      0.67   4825059
+weighted avg       0.89      0.88      0.88   4825059
+
+
+Accuracy 0.8820955349976032
+Step:  16 2560 1888 2557 1887
+dim 2560 1888 3
+MAX time seen 400.0
+(6, 2560, 1888)
+(6, 2557, 1887)
+(2557, 1887)
+
+ 8
+              precision    recall  f1-score   support
+
+    imp surf       0.88      0.89      0.89   1517913
+         car       0.89      0.64      0.74     82005
+    building       0.94      0.93      0.93   1116831
+  background       0.00      0.00      0.00         0
+     low veg       0.74      0.89      0.81    951333
+        tree       0.97      0.82      0.89   1156977
+
+   micro avg       0.88      0.88      0.88   4825059
+   macro avg       0.74      0.69      0.71   4825059
+weighted avg       0.89      0.88      0.88   4825059
+
+
+Accuracy 0.877133730385473
+Step:  16 2560 1888 2557 1887
+dim 2560 1888 3
+MAX time seen 400.0
+(6, 2560, 1888)
+(6, 2557, 1887)
+(2557, 1887)
+
+ 10
+              precision    recall  f1-score   support
+
+    imp surf       0.91      0.81      0.85   1809867
+         car       0.74      0.72      0.73     34020
+    building       0.81      0.92      0.86   1139974
+  background       0.00      0.00      0.00         0
+     low veg       0.73      0.76      0.75    848788
+        tree       0.85      0.86      0.86    992410
+
+   micro avg       0.84      0.84      0.84   4825059
+   macro avg       0.67      0.68      0.67   4825059
+weighted avg       0.84      0.84      0.84   4825059
+
+
+Accuracy 0.8357050141770287
+Step:  24 2576 1928 2575 1922
+dim 2576 1928 3
+MAX time seen 196.0
+(6, 2576, 1928)
+(6, 2575, 1922)
+(2575, 1922)
+
+ 12
+              precision    recall  f1-score   support
+
+    imp surf       0.76      0.85      0.80    704438
+         car       0.76      0.77      0.77     24937
+    building       0.87      0.87      0.87    947146
+  background       0.00      0.00      0.00         0
+     low veg       0.81      0.73      0.77   1437900
+        tree       0.85      0.87      0.86   1834729
+
+   micro avg       0.83      0.83      0.83   4949150
+   macro avg       0.68      0.68      0.68   4949150
+weighted avg       0.83      0.83      0.83   4949150
+
+
+Accuracy 0.8287065455684309
+Step:  25 2570 1920 2565 1919
+dim 2570 1920 3
+MAX time seen 169.0
+(6, 2570, 1920)
+(6, 2565, 1919)
+(2565, 1919)
+
+ 14
+              precision    recall  f1-score   support
+
+    imp surf       0.86      0.83      0.84   1132698
+         car       0.62      0.85      0.72     13160
+    building       0.86      0.96      0.90    867583
+  background       0.00      0.00      0.00         0
+     low veg       0.70      0.78      0.74   1255273
+        tree       0.90      0.78      0.83   1653521
+
+   micro avg       0.82      0.82      0.82   4922235
+   macro avg       0.66      0.70      0.67   4922235
+weighted avg       0.83      0.82      0.82   4922235
+
+
+Accuracy 0.8233436640062898
+Step:  25 2570 1920 2565 1919
+dim 2570 1920 3
+MAX time seen 169.0
+(6, 2570, 1920)
+(6, 2565, 1919)
+(2565, 1919)
+
+ 16
+              precision    recall  f1-score   support
+
+    imp surf       0.84      0.80      0.82    762536
+         car       0.71      0.79      0.75     11039
+    building       0.89      0.94      0.91    876923
+  background       0.00      0.00      0.00         0
+     low veg       0.79      0.76      0.77   1462710
+        tree       0.83      0.85      0.84   1809027
+
+   micro avg       0.83      0.83      0.83   4922235
+   macro avg       0.68      0.69      0.68   4922235
+weighted avg       0.83      0.83      0.83   4922235
+
+
+Accuracy 0.8309259919528426
+Step:  21 2315 1874 2315 1866
+dim 2315 1874 3
+MAX time seen 256.0
+(6, 2315, 1874)
+(6, 2315, 1866)
+(2315, 1866)
+
+ 20
+              precision    recall  f1-score   support
+
+    imp surf       0.91      0.84      0.88    869283
+         car       0.70      0.75      0.73     17858
+    building       0.77      0.93      0.84    706010
+  background       0.00      0.00      0.00    116770
+     low veg       0.77      0.78      0.77    836022
+        tree       0.91      0.92      0.91   1773847
+
+   micro avg       0.85      0.85      0.85   4319790
+   macro avg       0.68      0.70      0.69   4319790
+weighted avg       0.83      0.85      0.84   4319790
+
+
+Accuracy 0.8520300755360793
+Step:  18 2552 1904 2546 1903
+dim 2552 1904 3
+MAX time seen 324.0
+(6, 2552, 1904)
+(6, 2546, 1903)
+(2546, 1903)
+
+ 22
+              precision    recall  f1-score   support
+
+    imp surf       0.87      0.90      0.89   1548870
+         car       0.80      0.67      0.73     53188
+    building       0.91      0.92      0.91    864570
+  background       0.00      0.00      0.00         0
+     low veg       0.79      0.75      0.77    979331
+        tree       0.89      0.88      0.89   1399079
+
+   micro avg       0.87      0.87      0.87   4845038
+   macro avg       0.71      0.69      0.70   4845038
+weighted avg       0.87      0.87      0.87   4845038
+
+
+Accuracy 0.8673686357052308
+Step:  18 2552 1904 2546 1903
+dim 2552 1904 3
+MAX time seen 324.0
+(6, 2552, 1904)
+(6, 2546, 1903)
+(2546, 1903)
+
+ 24
+              precision    recall  f1-score   support
+
+    imp surf       0.79      0.76      0.77    703600
+         car       0.81      0.80      0.80     18309
+    building       0.85      0.90      0.87    909445
+  background       0.00      0.00      0.00         0
+     low veg       0.84      0.88      0.86   1986889
+        tree       0.87      0.78      0.82   1226795
+
+   micro avg       0.84      0.84      0.84   4845038
+   macro avg       0.69      0.69      0.69   4845038
+weighted avg       0.84      0.84      0.84   4845038
+
+
+Accuracy 0.8423027848285194
+Step:  20 3320 1920 3313 1917
+dim 3320 1920 3
+MAX time seen 256.0
+(6, 3320, 1920)
+(6, 3313, 1917)
+(3313, 1917)
+
+ 27
+              precision    recall  f1-score   support
+
+    imp surf       0.80      0.95      0.87   2029522
+         car       0.85      0.67      0.75    206789
+    building       0.97      0.87      0.92   2219920
+  background       0.00      0.00      0.00     15891
+     low veg       0.84      0.69      0.76   1242503
+        tree       0.72      0.88      0.79    636396
+
+   micro avg       0.85      0.85      0.85   6351021
+   macro avg       0.70      0.68      0.68   6351021
+weighted avg       0.86      0.85      0.85   6351021
+
+
+Accuracy 0.8518666526216808
+Step:  17 2564 1918 2563 1917
+dim 2564 1918 3
+MAX time seen 361.0
+(6, 2564, 1918)
+(6, 2563, 1917)
+(2563, 1917)
+
+ 29
+              precision    recall  f1-score   support
+
+    imp surf       0.89      0.94      0.92   2090518
+         car       0.78      0.72      0.75     66069
+    building       0.91      0.95      0.93   1339557
+  background       0.00      0.00      0.00    146135
+     low veg       0.84      0.60      0.70    730577
+        tree       0.69      0.94      0.79    540415
+
+   micro avg       0.86      0.86      0.86   4913271
+   macro avg       0.69      0.69      0.68   4913271
+weighted avg       0.84      0.86      0.85   4913271
+
+
+Accuracy 0.8619351548082733
+Step:  20 2560 1980 2555 1980
+dim 2560 1980 3
+MAX time seen 256.0
+(6, 2560, 1980)
+(6, 2555, 1980)
+(2555, 1980)
+
+ 31
+              precision    recall  f1-score   support
+
+    imp surf       0.85      0.92      0.88   1970871
+         car       0.85      0.52      0.65    182493
+    building       0.83      0.92      0.87   1402606
+  background       0.00      0.00      0.00    170440
+     low veg       0.90      0.86      0.88    756008
+        tree       0.91      0.86      0.88    576482
+
+   micro avg       0.86      0.86      0.86   5058900
+   macro avg       0.72      0.68      0.69   5058900
+weighted avg       0.83      0.86      0.84   5058900
+
+
+Accuracy 0.8568973492261164
+Step:  16 2560 1584 2555 1581
+dim 2560 1584 3
+MAX time seen 400.0
+(6, 2560, 1584)
+(6, 2555, 1581)
+(2555, 1581)
+
+ 33
+              precision    recall  f1-score   support
+
+    imp surf       0.78      0.95      0.85   1554472
+         car       0.55      0.53      0.54     51784
+    building       0.82      0.80      0.81   1170059
+  background       0.00      0.00      0.00    218121
+     low veg       0.56      0.34      0.42    621791
+        tree       0.53      0.73      0.62    423228
+
+   micro avg       0.73      0.73      0.73   4039455
+   macro avg       0.54      0.56      0.54   4039455
+weighted avg       0.69      0.73      0.70   4039455
+
+
+Accuracy 0.7320591515439583
+Step:  29 1886 2814 1884 2805
+dim 1886 2814 3
+MAX time seen 144.0
+(6, 1886, 2814)
+(6, 1884, 2805)
+(1884, 2805)
+
+ 35
+              precision    recall  f1-score   support
+
+    imp surf       0.86      0.86      0.86   1316392
+         car       0.82      0.65      0.73     39515
+    building       0.96      0.89      0.92   1397267
+  background       0.00      0.00      0.00         0
+     low veg       0.70      0.82      0.75   1302150
+        tree       0.83      0.74      0.78   1229296
+
+   micro avg       0.83      0.83      0.83   5284620
+   macro avg       0.69      0.66      0.67   5284620
+weighted avg       0.84      0.83      0.83   5284620
+
+
+Accuracy 0.8280597280409945
+Step:  23 2551 3816 2550 3816
+dim 2551 3816 3
+MAX time seen 196.0
+(6, 2551, 3816)
+(6, 2550, 3816)
+(2550, 3816)
+
+ 38
+              precision    recall  f1-score   support
+
+    imp surf       0.86      0.90      0.88   2593516
+         car       0.87      0.59      0.71     93108
+    building       0.90      0.90      0.90   2448506
+  background       0.00      0.00      0.00         0
+     low veg       0.82      0.82      0.82   2708217
+        tree       0.83      0.80      0.82   1887453
+
+   micro avg       0.85      0.85      0.85   9730800
+   macro avg       0.72      0.67      0.69   9730800
+weighted avg       0.85      0.85      0.85   9730800
+
+
+Accuracy 0.8546819377646236
+Using TensorFlow backend.
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/classification.py:1143: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/classification.py:1145: UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples.
+  'recall', 'true', average, warn_for)
+[0.830567395563981, 0.8729578228991604, 0.8820955349976032, 0.877133730385473, 0.8357050141770287, 0.8287065455684309, 0.8233436640062898, 0.8309259919528426, 0.8520300755360793, 0.8673686357052308, 0.8423027848285194, 0.8518666526216808, 0.8619351548082733, 0.8568973492261164, 0.7320591515439583, 0.8280597280409945, 0.8546819377646236]
+23  Accuracy all 0.8428610099780168

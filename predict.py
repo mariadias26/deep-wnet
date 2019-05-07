@@ -5,7 +5,8 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import tifffile as tiff
-from train_wnet import wnet_weights, get_model, PATCH_SZ, N_CLASSES
+#from train_wnet import wnet_weights, get_model, PATCH_SZ, N_CLASSES
+from train_unet_v import weights_path, get_model, PATCH_SZ, N_CLASSES
 from get_step import find_step
 from scipy import stats
 from sklearn.metrics import classification_report, accuracy_score
@@ -34,14 +35,14 @@ def reconstruct_patches(patches, image_size, step):
         patch_count[i * step:i * step + p_h, j * step:j * step + p_w] += 1
     print('MAX time seen', np.amax(patch_count))
     return img/patch_count
-'''
+
 def predict(x, model, patch_sz=160, n_classes=5, step = 142):
     dim_x, dim_y, dim = x.shape
     patches = patchify(x, (patch_sz, patch_sz, x.ndim), step = step)
     width_window, height_window, z, width_x, height_y, num_channel = patches.shape
     patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, num_channel))
 
-    patches_predict = model.predict(patches, batch_size=4)
+    patches_predict = model.predict(patches, batch_size=50)
     prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
     return prediction
 '''
@@ -57,8 +58,9 @@ def predict(x, model, patch_sz=160, n_classes=5, step = 142):
     #image_predict = predict[1]
     prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
     #new_image = reconstruct_patches(image_predict, (dim_x, dim_y, dim), step)
-    return prediction#, new_image
 
+    return prediction#, new_image
+'''
 def picture_from_mask(mask):
     colors = {
         0: [255, 255, 255],   #imp surface
@@ -97,12 +99,12 @@ def mask_from_picture(picture):
 
 def predict_all(step, dataset):
     model = get_model()
-    print(wnet_weights)
-    model.load_weights(wnet_weights)
+    print(weights_path)
+    model.load_weights(weights_path)
     if dataset == 'p':
         test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
-        path_i = '/home/mdias/deep-wnet/potsdam/Images_lab/top_potsdam_{}_RGB.tif'
-        path_m = './potsdam/5_Labels_all/top_potsdam_{}_label.tif'
+        path_i = './potsdam/test/Images/top_potsdam_{}_RGB.tif'
+        path_m = './potsdam/test/5_Labels_all/top_potsdam_{}_label.tif'
 
     elif dataset == 'v':
         test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
@@ -126,6 +128,7 @@ def predict_all(step, dataset):
             mask = mask.transpose([1,2,0])
             mask = mask[:x_original, :y_original, ]
             mask = mask.transpose([2,0,1])
+
         prediction = picture_from_mask(mask)
         print(mask.shape)
         print(gt.shape)
@@ -141,8 +144,7 @@ def predict_all(step, dataset):
         accuracy_all.append(accuracy)
         #tiff.imsave('./results/vaihingen/prediction/map_{}.tif'.format(test_id), prediction)
         #tiff.imsave('./results/vaihingen/mask/mask_{}.tif'.format(test_id), mask)
-        tiff.imsave('./results/potsdam/prediction/map_{}.tif'.format(test_id), prediction)
-        tiff.imsave('./results/potsdam/mask/mask_{}.tif'.format(test_id), mask)
+        tiff.imsave('./results/mask_unet_vaihingen_{}.tif'.format(test_id), mask)
         gc.collect()
         gc.collect()
         gc.collect()
@@ -156,4 +158,4 @@ def predict_all(step, dataset):
 
 step = 142
 print(step)
-predict_all(step, 'p')
+predict_all(step, 'v')
