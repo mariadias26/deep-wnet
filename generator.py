@@ -30,5 +30,5 @@ def image_generator(ids_file, path_image, path_mask, batch_size = 5, patch_size 
 
         batch_x = np.array( x )
         batch_y = np.array( y )
-        yield ( batch_x, [batch_y , batch_x])
-        #yield ( batch_x, batch_y )
+        #yield ( batch_x, [batch_y , batch_x])
+        yield ( batch_x, batch_y )

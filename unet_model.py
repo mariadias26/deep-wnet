@@ -8,7 +8,7 @@ from keras.initializers import he_uniform
 from keras.utils import plot_model
 from keras import backend as K
 
-def unet_model(n_classes=5, im_sz=160, n_channels=8, n_filters_start=32, growth_factor=2, upconv=True):
+def unet_model(n_classes=5, im_sz=160, n_channels=8, n_filters_start=32, growth_factor=2):
     droprate=0.25
 
     #Block1
@@ -71,10 +71,7 @@ def unet_model(n_classes=5, im_sz=160, n_channels=8, n_filters_start=32, growth_
 
     #Block7
     n_filters //= growth_factor
-    if upconv:
-        up6_1 = concatenate([Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same', name = 'up7')(actv5), actv4_1], name = 'concat7')
-    else:
-        up6_1 = concatenate([UpSampling2D(size=(2, 2), name = 'up7')(actv5), actv4_1], name = 'concat7')
+    up6_1 = concatenate([Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same', name = 'up7')(actv5), actv4_1], name = 'concat7')
     up6_1 = BatchNormalization(name = 'bn7')(up6_1)
     conv6_1 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv7_1', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(up6_1)
     actv6_1 = LeakyReLU(name = 'actv7_1')(conv6_1)
@@ -84,10 +81,7 @@ def unet_model(n_classes=5, im_sz=160, n_channels=8, n_filters_start=32, growth_
 
     #Block8
     n_filters //= growth_factor
-    if upconv:
-        up6_2 = concatenate([Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same', name = 'up8')(conv6_1), actv4_0], name = 'concat8')
-    else:
-        up6_2 = concatenate([UpSampling2D(size=(2, 2), name = 'up8')(conv6_1), actv4_0], name = 'concat8')
+    up6_2 = concatenate([Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same', name = 'up8')(conv6_1), actv4_0], name = 'concat8')
     up6_2 = BatchNormalization(name = 'bn8')(up6_2)
     conv6_2 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv8_1', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(up6_2)
     actv6_2 = LeakyReLU(name = 'actv8_1')(conv6_2)
@@ -97,10 +91,7 @@ def unet_model(n_classes=5, im_sz=160, n_channels=8, n_filters_start=32, growth_
 
     #Block9
     n_filters //= growth_factor
-    if upconv:
-        up7 = concatenate([Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same', name = 'up9')(conv6_2), actv3], name = 'concat9')
-    else:
-        up7 = concatenate([UpSampling2D(size=(2, 2), name = 'up9')(conv6_2), actv3], name = 'concat9')
+    up7 = concatenate([Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same', name = 'up9')(conv6_2), actv3], name = 'concat9')
     up7 = BatchNormalization(name = 'bn9')(up7)
     conv7 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv9_1', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(up7)
     actv7 = LeakyReLU(name = 'actv9_1')(conv7)
@@ -110,10 +101,7 @@ def unet_model(n_classes=5, im_sz=160, n_channels=8, n_filters_start=32, growth_
 
     #Block10
     n_filters //= growth_factor
-    if upconv:
-        up8 = concatenate([Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same', name = 'up10')(conv7), actv2], name = 'concat10')
-    else:
-        up8 = concatenate([UpSampling2D(size=(2, 2), name = 'up10')(conv7), actv2], name = 'concat10')
+    up8 = concatenate([Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same', name = 'up10')(conv7), actv2], name = 'concat10')
     up8 = BatchNormalization(name = 'bn10')(up8)
     conv8 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv10_1', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(up8)
     actv8 = LeakyReLU(name = 'actv10_1')(conv8)
@@ -123,10 +111,7 @@ def unet_model(n_classes=5, im_sz=160, n_channels=8, n_filters_start=32, growth_
 
     #Block11
     n_filters //= growth_factor
-    if upconv:
-        up9 = concatenate([Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same', name = 'up11')(conv8), actv1], name = 'concat11')
-    else:
-        up9 = concatenate([UpSampling2D(size=(2, 2), name = 'up11')(conv8), actv1], name = 'concat11')
+    up9 = concatenate([Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same', name = 'up11')(conv8), actv1], name = 'concat11')
     conv9 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv11_1', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(up9)
     actv9 = LeakyReLU(name = 'actv11_1')(conv9)
     conv9 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv11_2', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(actv9)
@@ -149,5 +134,5 @@ def unet_model(n_classes=5, im_sz=160, n_channels=8, n_filters_start=32, growth_
             dice -= dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
         return dice/n_classes
 
-    model.compile(optimizer=Adam(), loss=dice_coef_multilabel)
+    model.compile(optimizer=Adam(lr = 10e-5), loss=dice_coef_multilabel)
     return model
