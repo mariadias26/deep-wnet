@@ -49,7 +49,7 @@ def get_model():
   model = wnet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
   return model
 
-weights_path = 'weights_wnet_vaihingen_3'
+weights_path = 'weights_wnet_vaihingen_4'
 if not os.path.exists(weights_path):
     os.makedirs(weights_path)
 
