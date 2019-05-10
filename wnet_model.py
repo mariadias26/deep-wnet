@@ -7,6 +7,7 @@ from keras.initializers import he_uniform
 from keras.utils import plot_model
 from keras.losses import mean_absolute_error
 from keras import backend as K
+from octoconv import octconv
 
 def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_factor=2):
     droprate=0.25
@@ -26,7 +27,8 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     #Block2
     n_filters *= growth_factor
     pool1 = BatchNormalization(name = 'bn1')(pool1)
-    conv2 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv2_1')(pool1)
+    #conv2 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv2_1')(pool1)
+    conv2 = octconv(pool1, n_filters, kernel_size=(3, 3), strides=(1, 1), alpha=0.5, padding='same', dilation=None, bias=False, type='initial')
     actv2 = LeakyReLU(name = 'actv2_1')(conv2)
     conv2 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv2_2')(actv2)
     actv2 = LeakyReLU(name = 'actv2_2')(conv2)
