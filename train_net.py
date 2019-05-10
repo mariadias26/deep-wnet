@@ -23,7 +23,7 @@ N_EPOCHS = 50
 
 #train input
 DATASET = 'potsdam' #'vaihingen'
-MODEL = 'U'#'U'
+MODEL = 'W'#'U'
 ID = '1'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
@@ -76,7 +76,7 @@ if __name__ == '__main__':
             early_stopping = EarlyStopping(monitor='val_loss', restore_best_weights = True, patience = 5, mode ='min')
             model_checkpoint = ModelCheckpoint(weights_path, monitor='val_loss', save_best_only=True, mode = 'min')
             csv_logger = CSVLogger('log_unet.csv', append=True, separator=';')
-            tensorboard = TensorBoard(log_dir='./tensorboard_unet/', write_graph=True, write_images=True)
+            #tensorboard = TensorBoard(log_dir='./tensorboard_unet/', write_graph=True, write_images=True)
             step_size = (STEPS_PER_EPOCH//BATCH_SIZE)*8
             clr = CyclicLR(base_lr = 10e-5, max_lr = 10e-4, step_size = step_size, mode='triangular2')
 
@@ -89,7 +89,8 @@ if __name__ == '__main__':
                validation_data=val_gen,
                validation_steps=VALIDATION_STEPS,
                verbose=1, shuffle=True, max_queue_size=MAX_QUEUE,
-               callbacks=[model_checkpoint, csv_logger, tensorboard, early_stopping, clr]
+               callbacks=[model_checkpoint, csv_logger, early_stopping, clr]
+               #callbacks=[model_checkpoint, csv_logger, tensorboard, early_stopping, clr]
             )
             return model
     train_net()
