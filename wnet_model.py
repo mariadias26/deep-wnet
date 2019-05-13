@@ -27,8 +27,7 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     #Block2
     n_filters *= growth_factor
     pool1 = BatchNormalization(name = 'bn1')(pool1)
-    #conv2 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv2_1')(pool1)
-    conv2 = octconv(pool1, n_filters, kernel_size=(3, 3), strides=(1, 1), alpha=0.5, padding='same', dilation=None, bias=False, type='initial')
+    conv2 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv2_1')(pool1)
     actv2 = LeakyReLU(name = 'actv2_1')(conv2)
     conv2 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv2_2')(actv2)
     actv2 = LeakyReLU(name = 'actv2_2')(conv2)
@@ -267,5 +266,7 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
             dice -= dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
         return dice/n_classes
 
-    model.compile(optimizer=Adam(lr = 10e-5), loss=[focal_tversky, mean_squared_error], loss_weights  = [0.95, 0.05])
+    n_instances_per_class = [v for k, v in get_n_instances().items()]
+    #model.compile(optimizer=Adam(lr = 10e-5), loss=[categorical_class_balanced_focal_loss(n_instances_per_class, 0.9), mean_squared_error], loss_weights  = [0.95, 0.05])
+    model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef_multilabel, mean_squared_error], loss_weights  = [0.95, 0.05])
     return model

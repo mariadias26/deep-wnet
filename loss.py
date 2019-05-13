@@ -6,56 +6,10 @@ import tifffile as tiff
 import numpy as np
 from os import listdir
 from os.path import isfile, join
+from train_net import DATASET
 
 epsilon = 1e-5
 smooth = 1
-'''
-def confusion(y_true, y_pred):
-    smooth=1
-    y_pred_pos = K.clip(y_pred, 0, 1)
-    y_pred_neg = 1 - y_pred_pos
-    y_pos = K.clip(y_true, 0, 1)
-    y_neg = 1 - y_pos
-    tp = K.sum(y_pos * y_pred_pos)
-    fp = K.sum(y_neg * y_pred_pos)
-    fn = K.sum(y_pos * y_pred_neg)
-    prec = (tp + smooth)/(tp+fp+smooth)
-    recall = (tp+smooth)/(tp+fn+smooth)
-    return prec, recall
-
-def tp(y_true, y_pred):
-    smooth = 1
-    y_pred_pos = K.round(K.clip(y_pred, 0, 1))
-    y_pos = K.round(K.clip(y_true, 0, 1))
-    tp = (K.sum(y_pos * y_pred_pos) + smooth)/ (K.sum(y_pos) + smooth)
-    return tp
-
-def tn(y_true, y_pred):
-    smooth = 1
-    y_pred_pos = K.round(K.clip(y_pred, 0, 1))
-    y_pred_neg = 1 - y_pred_pos
-    y_pos = K.round(K.clip(y_true, 0, 1))
-    y_neg = 1 - y_pos
-    tn = (K.sum(y_neg * y_pred_neg) + smooth) / (K.sum(y_neg) + smooth )
-    return tn
-
-def tversky(y_true, y_pred):
-    y_true_pos = K.flatten(y_true)
-    y_pred_pos = K.flatten(y_pred)
-    true_pos = K.sum(y_true_pos * y_pred_pos)
-    false_neg = K.sum(y_true_pos * (1-y_pred_pos))
-    false_pos = K.sum((1-y_true_pos)*y_pred_pos)
-    alpha = 0.7
-    return (true_pos + smooth)/(true_pos + alpha*false_neg + (1-alpha)*false_pos + smooth)
-
-def tversky_loss(y_true, y_pred):
-    return 1 - tversky(y_true,y_pred)
-
-def focal_tversky(y_true,y_pred):
-    pt_1 = tversky(y_true, y_pred)
-    gamma = 0.75
-    return K.pow((1-pt_1), gamma)
-'''
 
 def mask_from_picture(picture):
     colors = {
@@ -76,24 +30,70 @@ def mask_from_picture(picture):
     return mask[picture]
 
 def get_n_instances():
-    dataset = input('Potsdam (p) or Vaihingen (v) dataset? ')
-    while True:
-        if dataset == 'p':
-            path = './datasets/potsdam/5_Labels_all/'
-            break
-        elif dataset == 'v':
-            path = './datasets/vaihingen/Images/'
-            break
-        else:
-            dataset = input('p or v?')
+    if DATASET == 'potsdam':
+        path = './datasets/potsdam/5_Labels_all/'
+    elif DATASET == 'vaihingen':
+        path = './datasets/vaihingen/Ground_Truth/'
     files = [f for f in listdir(path) if isfile(join(path, f))]
+    weights = dict()
     for f in files:
         filename = path + f
         img = tiff.imread(filename).transpose([2,0,1])
-        mask = mask_from_picture(img)
-        y = np.bincount(mask)
+        mask = mask_from_picture(img).astype('uint8')
+        dim_x, dim_y = mask.shape
+        y = np.bincount(mask.ravel())
         ii = np.nonzero(y)[0]
-        print(np.vstack((ii,y[ii])).T)
-        print(mask.shape)
+        count = dict(zip(ii, y[ii]/(dim_x*dim_y)))
+        weights = { k: weights.get(k, 0) + count.get(k, 0)  for k in set(weights) | set(count) }
 
-get_n_instances()
+    weights = {k: v/len(files) for k, v in weights.items()}
+    return weights
+
+def categorical_class_balanced_focal_loss(n_instances_per_class, beta, gamma=2.):
+    """
+   Parameters:
+     n_instances_per_class -- numpy array containing the number of instances per class in the training dataset
+     gamma -- focusing parameter for modulating factor (1-p)
+     beta  -- parameter for the class balancing
+
+   Default value:
+     gamma -- 2.0 as mentioned in the paper
+
+   References:
+       Official paper: https://arxiv.org/pdf/1901.05555.pdf
+
+   Usage:
+    model.compile(
+               loss=[categorical_class_balanced_focal_loss(n_instances_per_class, beta, gamma=2)],
+               metrics=["accuracy"],
+               optimizer=adam)
+   """
+    effective_num = 1.0 - np.power(beta, n_instances_per_class)
+    weights = (1.0 - beta) / np.array(effective_num)
+    weights = weights / np.sum(weights)
+    weights = K.variable(weights)
+
+    def categorical_class_balanced_focal_loss_fixed(y_true, y_pred):
+        """
+       :param y_true: A tensor of the same shape as `y_pred`
+       :param y_pred: A tensor resulting from a softmax
+       :return: Output tensor.
+       """
+
+        # Scale predictions so that the class probas of each sample sum to 1
+        y_pred /= K.sum(y_pred, axis=-1, keepdims=True)
+
+        # Clip the prediction value to prevent NaN's and Inf's
+        epsilon = K.epsilon()
+        y_pred = K.clip(y_pred, epsilon, 1. - epsilon)
+
+        # Calculate Cross Entropy
+        cross_entropy = -y_true * K.log(y_pred)
+
+        # Calculate Focal Loss
+        loss = weights * K.pow(1 - y_pred, gamma) * cross_entropy
+
+        # Sum the losses in mini_batch
+        return K.sum(loss, axis=1)
+
+    return categorical_class_balanced_focal_loss_fixed
