@@ -252,21 +252,7 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
         y_pred_f = K.flatten(y_pred)
         return K.mean(K.square(y_pred_f - y_true_f))
 
-
-    def dice_coef(y_true, y_pred, smooth=1e-7):
-        y_true_f = K.flatten(y_true)
-        y_pred_f = K.flatten(y_pred)
-        intersection = K.sum(y_true_f * y_pred_f)
-        return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
-
-    """This simply calculates the dice score for each individual label, and then sums them together, and includes the background."""
-    def dice_coef_multilabel(y_true, y_pred):
-        dice=n_classes
-        for index in range(n_classes):
-            dice -= dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
-        return dice/n_classes
-
-    n_instances_per_class = [v for k, v in get_n_instances().items()]
-    #model.compile(optimizer=Adam(lr = 10e-5), loss=[categorical_class_balanced_focal_loss(n_instances_per_class, 0.9), mean_squared_error], loss_weights  = [0.95, 0.05])
-    model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef_multilabel, mean_squared_error], loss_weights  = [0.95, 0.05])
+    #model.compile(optimizer=Adam(lr = 10e-5), loss=[loss_segmentation, mean_squared_error], loss_weights  = [0.95, 0.05])
+    model.compile(optimizer=Adam(lr = 10e-5), loss=[categorical_class_balanced_focal_loss(0.99), mean_squared_error], loss_weights  = [0.95, 0.05])
+    #model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef_multilabel, mean_squared_error], loss_weights  = [0.95, 0.05])
     return model
