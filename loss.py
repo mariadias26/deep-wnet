@@ -49,7 +49,22 @@ def get_n_instances():
     weights = {k: v/len(files) for k, v in weights.items()}
     return weights
 
-def categorical_class_balanced_focal_loss(n_instances_per_class, beta, gamma=2.):
+WEIGHTS = [v for k, v in get_n_instances().items()]
+
+def dice_coef(y_true, y_pred, smooth=1e-7):
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+
+"""This simply calculates the dice score for each individual label, and then sums them together, and includes the background."""
+def dice_coef_multilabel(y_true, y_pred, n_classes=6):
+    dice=n_classes
+    for index in range(n_classes):
+        dice -= dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
+    return dice
+
+def categorical_class_balanced_focal_loss(beta, gamma=2.):
     """
    Parameters:
      n_instances_per_class -- numpy array containing the number of instances per class in the training dataset
@@ -68,6 +83,7 @@ def categorical_class_balanced_focal_loss(n_instances_per_class, beta, gamma=2.)
                metrics=["accuracy"],
                optimizer=adam)
    """
+    n_instances_per_class = WEIGHTS
     effective_num = 1.0 - np.power(beta, n_instances_per_class)
     weights = (1.0 - beta) / np.array(effective_num)
     weights = weights / np.sum(weights)
@@ -93,7 +109,15 @@ def categorical_class_balanced_focal_loss(n_instances_per_class, beta, gamma=2.)
         # Calculate Focal Loss
         loss = weights * K.pow(1 - y_pred, gamma) * cross_entropy
 
+        dice = dice_coef_multilabel(y_true, y_pred)
         # Sum the losses in mini_batch
-        return K.sum(loss, axis=1)
+        return (K.sum(loss, axis=1) + dice)/2
 
     return categorical_class_balanced_focal_loss_fixed
+
+def loss_segmentation(y_true, y_pred):#, n_instances_per_class, beta = 0.9):
+    beta = 0.9
+    n_instances_per_class = WEIGHTS
+    loss = categorical_class_balanced_focal_loss(n_instances_per_class, beta, gamma=2.)
+    #loss = (categorical_class_balanced_focal_loss(n_instances_per_class, beta, gamma=2.) + dice_coef_multilabel(y_true, y_pred))/2
+    return loss
