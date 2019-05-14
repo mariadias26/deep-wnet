@@ -40,8 +40,10 @@ if DATASET == 'potsdam':
         MAX_QUEUE = 30
     elif MODEL == 'W':
         STEPS_PER_EPOCH = 10000
+        STEPS_PER_EPOCH = 100
         BATCH_SIZE = 14
-        MAX_QUEUE = 20
+        BATCH_SIZE = 4
+        MAX_QUEUE = 10
 elif DATASET == 'vaihingen':
     TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']
     VAL_IDS = ['5', '7', '23', '37']
