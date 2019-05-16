@@ -22,9 +22,9 @@ N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
 N_EPOCHS = 50
 
 #train input
-DATASET = 'potsdam' #'vaihingen'
+DATASET = 'vaihingen' #'potsdam'
 MODEL = 'W'#'U'
-ID = '1'
+ID = '2'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
@@ -55,9 +55,9 @@ elif DATASET == 'vaihingen':
 
 def get_model():
     if MODEL == 'U':
-        model = unet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
+        model = unet_model(DATASET, N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
     elif MODEL == 'W':
-        model = wnet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
+        model = wnet_model(DATASET, N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
     return model
 
 weights_path = 'weights_' + MODEL + '_' + DATASET + '_' + ID

@@ -1,12 +1,12 @@
 from keras.losses import binary_crossentropy
 import keras.backend as K
+from keras.layers import Conv2D
 import tensorflow as tf
 
 import tifffile as tiff
 import numpy as np
 from os import listdir
 from os.path import isfile, join
-from train_net import DATASET
 
 epsilon = 1e-5
 smooth = 1
@@ -29,10 +29,10 @@ def mask_from_picture(picture):
     picture = picture.dot(np.array([65536, 256, 1], dtype='int32'))
     return mask[picture]
 
-def get_n_instances():
-    if DATASET == 'potsdam':
+def get_n_instances(dataset):
+    if dataset == 'potsdam':
         path = './datasets/potsdam/5_Labels_all/'
-    elif DATASET == 'vaihingen':
+    elif dataset == 'vaihingen':
         path = './datasets/vaihingen/Ground_Truth/'
     files = [f for f in listdir(path) if isfile(join(path, f))]
     weights = dict()
@@ -49,8 +49,6 @@ def get_n_instances():
     weights = {k: v/len(files) for k, v in weights.items()}
     return weights
 
-WEIGHTS = [v for k, v in get_n_instances().items()]
-
 def dice_coef(y_true, y_pred, smooth=1e-7):
     y_true_f = K.flatten(y_true)
     y_pred_f = K.flatten(y_pred)
@@ -64,7 +62,7 @@ def dice_coef_multilabel(y_true, y_pred, n_classes=6):
         dice -= dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
     return dice
 
-def categorical_class_balanced_focal_loss(beta, gamma=2.):
+def categorical_class_balanced_focal_loss(n_instances_per_class, beta, gamma=2.):
     """
    Parameters:
      n_instances_per_class -- numpy array containing the number of instances per class in the training dataset
@@ -83,7 +81,6 @@ def categorical_class_balanced_focal_loss(beta, gamma=2.):
                metrics=["accuracy"],
                optimizer=adam)
    """
-    n_instances_per_class = WEIGHTS
     effective_num = 1.0 - np.power(beta, n_instances_per_class)
     weights = (1.0 - beta) / np.array(effective_num)
     weights = weights / np.sum(weights)
@@ -115,9 +112,78 @@ def categorical_class_balanced_focal_loss(beta, gamma=2.):
 
     return categorical_class_balanced_focal_loss_fixed
 
-def loss_segmentation(y_true, y_pred):#, n_instances_per_class, beta = 0.9):
-    beta = 0.9
-    n_instances_per_class = WEIGHTS
-    loss = categorical_class_balanced_focal_loss(n_instances_per_class, beta, gamma=2.)
-    #loss = (categorical_class_balanced_focal_loss(n_instances_per_class, beta, gamma=2.) + dice_coef_multilabel(y_true, y_pred))/2
-    return loss
+def gaussian(x, mu, sigma):
+    return np.exp(-(float(x) - float(mu)) ** 2 / (2 * sigma ** 2))
+
+def make_kernel(sigma):
+    # kernel radius = 2*sigma, but minimum 3x3 matrix
+    kernel_size = max(3, int(2 * 2 * sigma + 1))
+    mean = np.floor(0.5 * kernel_size)
+    kernel_1d = np.array([gaussian(x, mean, sigma) for x in range(kernel_size)])
+    # make 2D kernel
+    np_kernel = np.outer(kernel_1d, kernel_1d).astype(dtype=K.floatx())
+    # normalize kernel by sum of elements
+    kernel = np_kernel / np.sum(np_kernel)
+    kernel = np.reshape(kernel, (kernel_size, kernel_size, 1, 1))    #height, width, in_channels, out_channel
+    return kernel
+
+def keras_SSIM_cs(y_true, y_pred):
+    axis=None
+    gaussian = make_kernel(1.5)
+    print('\n\n\n',gaussian.shape,'\n\n\n')
+    x = tf.nn.conv2d(y_true, gaussian, strides=[1, 1, 1, 1], padding='SAME')
+    y = tf.nn.conv2d(y_pred, gaussian, strides=[1, 1, 1, 1], padding='SAME')
+
+    u_x=K.mean(x, axis=axis)
+    u_y=K.mean(y, axis=axis)
+
+    var_x=K.var(x, axis=axis)
+    var_y=K.var(y, axis=axis)
+
+    cov_xy=cov_keras(x, y, axis)
+
+    K1=0.01
+    K2=0.03
+    L=1  # depth of image (255 in case the image has a differnt scale)
+
+    C1=(K1*L)**2
+    C2=(K2*L)**2
+    C3=C2/2
+
+    l = ((2*u_x*u_y)+C1) / (K.pow(u_x,2) + K.pow(u_x,2) + C1)
+    c = ((2*K.sqrt(var_x)*K.sqrt(var_y))+C2) / (var_x + var_y + C2)
+    s = (cov_xy+C3) / (K.sqrt(var_x)*K.sqrt(var_y) + C3)
+
+    return [c,s,l]
+
+def keras_MS_SSIM(y_true, y_pred):
+    iterations = 5
+    x=y_true
+    y=y_pred
+    weight = [0.0448, 0.2856, 0.3001, 0.2363, 0.1333]
+    c=[]
+    s=[]
+    for i in range(iterations):
+        cs=keras_SSIM_cs(x, y)
+        c.append(cs[0])
+        s.append(cs[1])
+        l=cs[2]
+        if(i!=4):
+            x=tf.image.resize_images(x, (x.get_shape().as_list()[1]//(2**(i+1)), x.get_shape().as_list()[2]//(2**(i+1))))
+            y=tf.image.resize_images(y, (y.get_shape().as_list()[1]//(2**(i+1)), y.get_shape().as_list()[2]//(2**(i+1))))
+    c = tf.stack(c)
+    s = tf.stack(s)
+    cs = c*s
+
+    #Normalize: suggestion from https://github.com/jorge-pessoa/pytorch-msssim/issues/2 last comment to avoid NaN values
+    l=(l+1)/2
+    cs=(cs+1)/2
+
+    cs=cs**weight
+    cs = tf.reduce_prod(cs)
+    l=l**weight[-1]
+
+    ms_ssim = l*cs
+    ms_ssim = tf.where(tf.is_nan(ms_ssim), K.zeros_like(ms_ssim), ms_ssim)
+
+    return K.mean(ms_ssim)
