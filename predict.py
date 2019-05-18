@@ -5,13 +5,13 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import tifffile as tiff
+import cv2
 #from train_wnet import wnet_weights, get_model, PATCH_SZ, N_CLASSES
 from train_net import weights_path, get_model, PATCH_SZ, N_CLASSES, DATASET, MODEL, ID
 from get_step import find_step
 from scipy import stats
 from sklearn.metrics import classification_report, accuracy_score
 import gc
-import cv2
 from skimage.util.shape import view_as_windows
 import time
 from itertools import product
@@ -103,8 +103,8 @@ def predict_all(step):
     model.load_weights(weights_path)
     if DATASET == 'potsdam':
         test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
-        path_i = './datasets/potsdam/test/Images/top_potsdam_{}_RGB.tif'
-        path_m = './datasets/potsdam/test/5_Labels_all/top_potsdam_{}_label.tif'
+        path_i = './datasets/potsdam/Images_lab/top_potsdam_{}_RGB.tif'
+        path_m = './datasets/potsdam/5_Labels_all/top_potsdam_{}_label.tif'
 
     elif DATASET == 'vaihingen':
         test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
@@ -139,7 +139,7 @@ def predict_all(step):
         print(report)
         print('\nAccuracy', accuracy)
         accuracy_all.append(accuracy)
-        tiff.imsave('./datasets/'+MODEL+'_'+DATASET+'_'+ID+'/mask_{}.tif'.format(test_id), mask)
+        tiff.imsave('./datasets/results/'+MODEL+'_'+DATASET+'_'+ID+'/mask_{}.tif'.format(test_id), mask)
         gc.collect()
         gc.collect()
         gc.collect()
@@ -151,6 +151,6 @@ def predict_all(step):
 
 
 
-step = 142
+step = 40
 print(step)
 predict_all(step)
