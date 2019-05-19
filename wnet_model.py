@@ -5,7 +5,6 @@ from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, concatenate,
 from keras.optimizers import Adam
 from keras.initializers import he_uniform
 from keras.utils import plot_model
-from keras.losses import mean_absolute_error
 from keras import backend as K
 from loss import *
 
@@ -253,5 +252,6 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
         return K.mean(K.square(y_pred_f - y_true_f))
 
     n_instances_per_class = [v for k, v in get_n_instances(dataset).items()]
-    model.compile(optimizer=Adam(lr = 10e-5), loss=[categorical_class_balanced_focal_loss(n_instances_per_class, 0.99), mean_squared_error], loss_weights  = [0.95, 0.05])
+    model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef_multilabel, mix], loss_weights  = [0.95, 0.05])
+    #model.compile(optimizer=Adam(lr = 10e-5), loss=[categorical_class_balanced_focal_loss(n_instances_per_class, 0.99), mean_squared_error], loss_weights  = [0.95, 0.05])
     return model

@@ -1,4 +1,5 @@
-from keras.losses import binary_crossentropy
+from keras.losses import binary_crossentropy, mean_absolute_error
+
 import keras.backend as K
 from keras.layers import Conv2D
 import tensorflow as tf
@@ -60,7 +61,7 @@ def dice_coef_multilabel(y_true, y_pred, n_classes=6):
     dice=n_classes
     for index in range(n_classes):
         dice -= dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
-    return dice
+    return dice/n_classes
 
 def categorical_class_balanced_focal_loss(n_instances_per_class, beta, gamma=2.):
     """
@@ -119,18 +120,17 @@ def make_kernel(sigma):
     # kernel radius = 2*sigma, but minimum 3x3 matrix
     kernel_size = max(3, int(2 * 2 * sigma + 1))
     mean = np.floor(0.5 * kernel_size)
-    kernel_1d = np.array([gaussian(x, mean, sigma) for x in range(kernel_size)])
+    kernel_1d = np.array([gaussian(x, mean, sigma) for x in range(3*kernel_size)])
     # make 2D kernel
     np_kernel = np.outer(kernel_1d, kernel_1d).astype(dtype=K.floatx())
     # normalize kernel by sum of elements
     kernel = np_kernel / np.sum(np_kernel)
-    kernel = np.reshape(kernel, (kernel_size, kernel_size, 1, 1))    #height, width, in_channels, out_channel
+    kernel = np.reshape(kernel, (kernel_size, kernel_size, 3, 3))    #height, width, in_channels, out_channel
     return kernel
 
 def keras_SSIM_cs(y_true, y_pred):
     axis=None
     gaussian = make_kernel(1.5)
-    print('\n\n\n',gaussian.shape,'\n\n\n')
     x = tf.nn.conv2d(y_true, gaussian, strides=[1, 1, 1, 1], padding='SAME')
     y = tf.nn.conv2d(y_pred, gaussian, strides=[1, 1, 1, 1], padding='SAME')
 
@@ -140,7 +140,8 @@ def keras_SSIM_cs(y_true, y_pred):
     var_x=K.var(x, axis=axis)
     var_y=K.var(y, axis=axis)
 
-    cov_xy=cov_keras(x, y, axis)
+    cov_xy = K.mean(x*y, axis=axis) - u_x*u_y
+    #cov_xy=cov_keras(x, y, axis)
 
     K1=0.01
     K2=0.03
@@ -168,9 +169,9 @@ def keras_MS_SSIM(y_true, y_pred):
         c.append(cs[0])
         s.append(cs[1])
         l=cs[2]
-        if(i!=4):
-            x=tf.image.resize_images(x, (x.get_shape().as_list()[1]//(2**(i+1)), x.get_shape().as_list()[2]//(2**(i+1))))
-            y=tf.image.resize_images(y, (y.get_shape().as_list()[1]//(2**(i+1)), y.get_shape().as_list()[2]//(2**(i+1))))
+        #if(i!=4):
+            #x=tf.image.resize_images(x, (x.get_shape().as_list()[1]//(2**(i+1)), x.get_shape().as_list()[2]//(2**(i+1))))
+            #y=tf.image.resize_images(y, (y.get_shape().as_list()[1]//(2**(i+1)), y.get_shape().as_list()[2]//(2**(i+1))))
     c = tf.stack(c)
     s = tf.stack(s)
     cs = c*s
@@ -187,3 +188,6 @@ def keras_MS_SSIM(y_true, y_pred):
     ms_ssim = tf.where(tf.is_nan(ms_ssim), K.zeros_like(ms_ssim), ms_ssim)
 
     return K.mean(ms_ssim)
+
+def mix(y_true, y_pred, alpha = 0.84):
+    return alpha * keras_MS_SSIM(y_true, y_pred) + (1 - alpha) * mean_absolute_error(y_true, y_pred)
