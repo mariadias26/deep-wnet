@@ -14,7 +14,7 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.7)
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.9)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 N_BANDS = 3
@@ -24,7 +24,7 @@ N_EPOCHS = 50
 #train input
 DATASET = 'vaihingen' #'potsdam'
 MODEL = 'W'#'U'
-ID = '2'
+ID = '3'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
@@ -40,7 +40,7 @@ if DATASET == 'potsdam':
         MAX_QUEUE = 30
     elif MODEL == 'W':
         STEPS_PER_EPOCH = 10000
-        BATCH_SIZE = 14
+        BATCH_SIZE = 12
         MAX_QUEUE = 10
 elif DATASET == 'vaihingen':
     TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']
