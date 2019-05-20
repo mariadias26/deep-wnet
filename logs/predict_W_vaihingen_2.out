@@ -61,3 +61,117 @@ weighted avg       0.85      0.83      0.83   4825059
 
 
 Accuracy 0.8304630057373392
+Step:  16 2560 1888 2557 1887
+MAX time seen 400.0
+
+ 6
+              precision    recall  f1-score   support
+
+    imp surf       0.71      0.91      0.80   1233825
+         car       0.74      0.41      0.53     79235
+    building       0.93      0.78      0.85   1601632
+  background       0.00      0.00      0.00         0
+     low veg       0.47      0.79      0.59    516263
+        tree       0.96      0.69      0.81   1394104
+
+   micro avg       0.78      0.78      0.78   4825059
+   macro avg       0.64      0.60      0.59   4825059
+weighted avg       0.83      0.78      0.79   4825059
+
+
+Accuracy 0.7821815235834422
+Step:  16 2560 1888 2557 1887
+MAX time seen 400.0
+
+ 8
+              precision    recall  f1-score   support
+
+    imp surf       0.75      0.93      0.83   1517913
+         car       0.79      0.46      0.58     82005
+    building       0.93      0.78      0.85   1116831
+  background       0.00      0.00      0.00         0
+     low veg       0.56      0.83      0.67    951333
+        tree       0.98      0.47      0.64   1156977
+
+   micro avg       0.76      0.76      0.76   4825059
+   macro avg       0.67      0.58      0.59   4825059
+weighted avg       0.81      0.76      0.75   4825059
+
+
+Accuracy 0.7577637910748863
+Step:  16 2560 1888 2557 1887
+MAX time seen 400.0
+
+ 10
+              precision    recall  f1-score   support
+
+    imp surf       0.85      0.84      0.84   1809867
+         car       0.48      0.57      0.52     34020
+    building       0.80      0.87      0.84   1139974
+  background       0.00      0.00      0.00         0
+     low veg       0.58      0.80      0.67    848788
+        tree       0.93      0.55      0.69    992410
+
+   micro avg       0.78      0.78      0.78   4825059
+   macro avg       0.61      0.60      0.59   4825059
+weighted avg       0.80      0.78      0.78   4825059
+
+
+Accuracy 0.7764839766726168
+Step:  24 2576 1928 2575 1922
+MAX time seen 196.0
+
+ 12
+              precision    recall  f1-score   support
+
+    imp surf       0.64      0.88      0.74    704438
+         car       0.53      0.78      0.63     24937
+    building       0.87      0.79      0.83    947146
+  background       0.00      0.00      0.00         0
+     low veg       0.63      0.82      0.71   1437900
+        tree       0.93      0.62      0.75   1834729
+
+   micro avg       0.75      0.75      0.75   4949150
+   macro avg       0.60      0.65      0.61   4949150
+weighted avg       0.79      0.75      0.75   4949150
+
+
+Accuracy 0.7492048129476779
+Step:  25 2570 1920 2565 1919
+MAX time seen 169.0
+
+ 14
+              precision    recall  f1-score   support
+
+    imp surf       0.76      0.85      0.80   1132698
+         car       0.45      0.80      0.58     13160
+    building       0.83      0.88      0.85    867583
+  background       0.00      0.00      0.00         0
+     low veg       0.51      0.79      0.62   1255273
+        tree       0.93      0.42      0.58   1653521
+
+   micro avg       0.70      0.70      0.70   4922235
+   macro avg       0.58      0.62      0.57   4922235
+weighted avg       0.76      0.70      0.69   4922235
+
+
+Accuracy 0.6969309673349606
+Step:  25 2570 1920 2565 1919
+MAX time seen 169.0
+
+ 16
+              precision    recall  f1-score   support
+
+    imp surf       0.75      0.84      0.79    762536
+         car       0.41      0.72      0.52     11039
+    building       0.88      0.87      0.87    876923
+  background       0.00      0.00      0.00         0
+     low veg       0.66      0.84      0.74   1462710
+        tree       0.91      0.65      0.76   1809027
+
+   micro avg       0.78      0.78      0.78   4922235
+   macro avg       0.60      0.65      0.61   4922235
+weighted avg       0.80      0.78      0.78   4922235
+
+
+Accuracy 0.7764422056240712
