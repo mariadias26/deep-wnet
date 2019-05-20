@@ -169,14 +169,10 @@ def keras_MS_SSIM(y_true, y_pred):
         c.append(cs[0])
         s.append(cs[1])
         l=cs[2]
-        #if(i!=4):
-            #x=tf.image.resize_images(x, (x.get_shape().as_list()[1]//(2**(i+1)), x.get_shape().as_list()[2]//(2**(i+1))))
-            #y=tf.image.resize_images(y, (y.get_shape().as_list()[1]//(2**(i+1)), y.get_shape().as_list()[2]//(2**(i+1))))
     c = tf.stack(c)
     s = tf.stack(s)
     cs = c*s
 
-    #Normalize: suggestion from https://github.com/jorge-pessoa/pytorch-msssim/issues/2 last comment to avoid NaN values
     l=(l+1)/2
     cs=(cs+1)/2
 
