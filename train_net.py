@@ -24,7 +24,7 @@ N_EPOCHS = 50
 #train input
 DATASET = 'vaihingen' #'potsdam'
 MODEL = 'W'#'U'
-ID = '2'
+ID = '3'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
@@ -40,7 +40,7 @@ if DATASET == 'potsdam':
         MAX_QUEUE = 30
     elif MODEL == 'W':
         STEPS_PER_EPOCH = 10000
-        BATCH_SIZE = 14
+        BATCH_SIZE = 12
         MAX_QUEUE = 10
 elif DATASET == 'vaihingen':
     TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']
@@ -48,7 +48,7 @@ elif DATASET == 'vaihingen':
     path_img = '/tmp/vaihingen/Images_lab/top_mosaic_09cm_area{}.tif'
     path_mask = '/tmp/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     PATCH_SZ = 320   # should divide by 16
-    BATCH_SIZE = 10
+    BATCH_SIZE = 4
     STEPS_PER_EPOCH = 4000
     VALIDATION_STEPS = 1000
     MAX_QUEUE = 10
