@@ -117,7 +117,7 @@ def unet_model(n_classes=5, im_sz=160, n_channels=8, n_filters_start=32, growth_
     conv9 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv11_2', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(actv9)
     actv9 = LeakyReLU(name = 'actv11_2')(conv9)
 
-    conv10 = Conv2D(n_classes, (1, 1), activation='sigmoid', name = 'output1')(actv9)
+    conv10 = Conv2D(n_classes, (1, 1), activation='softmax', name = 'output1')(actv9)
 
     model = Model(inputs=inputs, outputs=conv10)
 

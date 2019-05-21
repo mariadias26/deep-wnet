@@ -14,7 +14,7 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.9)
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 N_BANDS = 3
@@ -22,9 +22,9 @@ N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
 N_EPOCHS = 50
 
 #train input
-DATASET = 'vaihingen' #'potsdam'
-MODEL = 'W'#'U'
-ID = '3'
+DATASET = 'potsdam' #'vaihingen'
+MODEL = 'U'#'W'
+ID = '2'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
@@ -55,7 +55,7 @@ elif DATASET == 'vaihingen':
 
 def get_model():
     if MODEL == 'U':
-        model = unet_model(DATASET, N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
+        model = unet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
     elif MODEL == 'W':
         model = wnet_model(DATASET, N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
     return model
