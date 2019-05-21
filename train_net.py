@@ -48,7 +48,7 @@ elif DATASET == 'vaihingen':
     path_img = '/tmp/vaihingen/Images_lab/top_mosaic_09cm_area{}.tif'
     path_mask = '/tmp/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     PATCH_SZ = 320   # should divide by 16
-    BATCH_SIZE = 10
+    BATCH_SIZE = 4
     STEPS_PER_EPOCH = 4000
     VALIDATION_STEPS = 1000
     MAX_QUEUE = 10
