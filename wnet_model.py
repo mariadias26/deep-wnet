@@ -8,9 +8,10 @@ from keras.utils import plot_model
 from keras import backend as K
 from loss import *
 from lovasz_losses_tf import *
+from attn_augconv import *
 
 
-def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_factor=2):
+def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=16, growth_factor=2):
     droprate=0.25
 
     #-------------Encoder
@@ -19,6 +20,7 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     inputs = Input((im_sz, im_sz, n_channels), name='input')
     #inputs = BatchNormalization()(inputs)
     conv1 = Conv2D(n_filters, (3, 3),  padding='same', name = 'conv1_1')(inputs)
+    #conv1 = augmented_conv2d(inputs, n_filters, depth_k = 0.125, depth_v = 0.125, num_heads = 2)
     actv1 = LeakyReLU(name = 'actv1_1')(conv1)
     conv1 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv1_2')(actv1)
     actv1 = LeakyReLU(name = 'actv1_2')(conv1)
@@ -257,7 +259,7 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
         return lovasz_softmax(probas, labels, order = 'BCHW')
 
     #n_instances_per_class = [v for k, v in get_n_instances(dataset).items()]
-    model.compile(optimizer=Adam(lr = 10e-5), loss=[keras_lovasz_softmax, mean_squared_error], loss_weights  = [0.95, 0.05])
-    #model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef_multilabel, mix], loss_weights  = [0.95, 0.05])
+    #model.compile(optimizer=Adam(lr = 10e-5), loss=[keras_lovasz_softmax, mean_squared_error], loss_weights  = [0.95, 0.05])
+    model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef_multilabel, mean_squared_error], loss_weights  = [0.95, 0.05])
     #model.compile(optimizer=Adam(lr = 10e-5), loss=[categorical_class_balanced_focal_loss(n_instances_per_class, 0.99), mean_squared_error], loss_weights  = [0.95, 0.05])
     return model

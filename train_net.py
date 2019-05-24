@@ -14,17 +14,21 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1)
-sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
+
+#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.9)
+#sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 N_BANDS = 3
 N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
 N_EPOCHS = 50
 
 #train input
-DATASET = 'potsdam' #'vaihingen'
+DATASET = 'vaihingen' #'potsdam'
 MODEL = 'U'#'W'
-ID = '2'
+ID = '0'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
@@ -48,9 +52,9 @@ elif DATASET == 'vaihingen':
     path_img = '/tmp/vaihingen/Images_lab/top_mosaic_09cm_area{}.tif'
     path_mask = '/tmp/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     PATCH_SZ = 320   # should divide by 16
-    BATCH_SIZE = 4
-    STEPS_PER_EPOCH = 4000
-    VALIDATION_STEPS = 1000
+    BATCH_SIZE = 16
+    STEPS_PER_EPOCH = 6000
+    VALIDATION_STEPS = 2000
     MAX_QUEUE = 10
 
 def get_model():
