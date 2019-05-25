@@ -4,8 +4,8 @@ import numpy as np
 import numpy.ma as ma
 import pandas as pd
 
-test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
-#test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
+#test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
+test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
 
 def picture_from_mask(mask):
     colors = {
@@ -45,10 +45,10 @@ def mask_from_picture(picture):
   picture = picture.dot(np.array([65536, 256, 1], dtype='int32'))
   return mask[picture]
 
-path_mask_nb = './datasets/potsdam/5_Labels_all_noBoundary/top_potsdam_{}_label_noBoundary.tif'
-#path_mask_nb = './datasets/vaihingen/Ground_Truth_noBoundary/top_mosaic_09cm_area{}_noBoundary.tif'
-path_mask_predict = './datasets/results/W_potsdam_1/mask_{}.tif'
-#path_mask_predict = './datasets/results/W_vaihingen_1/mask_{}.tif'
+#path_mask_nb = './datasets/potsdam/5_Labels_all_noBoundary/top_potsdam_{}_label_noBoundary.tif'
+path_mask_nb = './datasets/vaihingen/Ground_Truth_noBoundary/top_mosaic_09cm_area{}_noBoundary.tif'
+#path_mask_predict = './datasets/results/W_potsdam_1/mask_{}.tif'
+path_mask_predict = './datasets/results/W_vaihingen_0_1/mask_{}.tif'
 accuracy_all = []
 all_reports = []
 for test_id in test:

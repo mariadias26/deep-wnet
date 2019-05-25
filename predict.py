@@ -36,17 +36,6 @@ def reconstruct_patches(patches, image_size, step):
     print('MAX time seen', np.amax(patch_count))
     return img/patch_count
 
-'''
-def predict(x, model, patch_sz=160, n_classes=5, step = 142):
-    dim_x, dim_y, dim = x.shape
-    patches = patchify(x, (patch_sz, patch_sz, x.ndim), step = step)
-    width_window, height_window, z, width_x, height_y, num_channel = patches.shape
-    patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, num_channel))
-
-    patches_predict = model.predict(patches, batch_size=50)
-    prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
-    return prediction
-'''
 def predict(x, model, patch_sz=160, n_classes=5, step = 142):
     dim_x, dim_y, dim = x.shape
     patches = patchify(x, (patch_sz, patch_sz, x.ndim), step = step)
@@ -55,7 +44,7 @@ def predict(x, model, patch_sz=160, n_classes=5, step = 142):
 
     predict = model.predict(patches, batch_size=50)
     patches_predict = predict[0]
-    #image_predict = predict[1]
+    #patches_predict = predict
     prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
     #new_image = reconstruct_patches(image_predict, (dim_x, dim_y, dim), step)
 

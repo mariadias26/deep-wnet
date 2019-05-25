@@ -14,7 +14,11 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1)
+#config = tf.ConfigProto()
+#config.gpu_options.allow_growth = True
+#sess = tf.Session(config=config)
+
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.8)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 N_BANDS = 3
@@ -22,9 +26,9 @@ N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
 N_EPOCHS = 50
 
 #train input
-DATASET = 'vaihingen' #'vaihingen'
+DATASET = 'vaihingen' #'potsdam'
 MODEL = 'W'#'W'
-ID = '2'
+ID = '0_1'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
@@ -48,7 +52,7 @@ elif DATASET == 'vaihingen':
     path_img = '/tmp/vaihingen/Images_lab/top_mosaic_09cm_area{}.tif'
     path_mask = '/tmp/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     PATCH_SZ = 320   # should divide by 16
-    BATCH_SIZE = 4
+    BATCH_SIZE = 12
     STEPS_PER_EPOCH = 4000
     VALIDATION_STEPS = 1000
     MAX_QUEUE = 10
@@ -77,7 +81,7 @@ if __name__ == '__main__':
             model_checkpoint = ModelCheckpoint(weights_path, monitor='val_loss', save_best_only=True, mode = 'min')
             csv_logger = CSVLogger('log_unet.csv', append=True, separator=';')
             #tensorboard = TensorBoard(log_dir='./tensorboard_unet/', write_graph=True, write_images=True)
-            step_size = (STEPS_PER_EPOCH//BATCH_SIZE)*8
+            step_size = (STEPS_PER_EPOCH//BATCH_SIZE)*4
             clr = CyclicLR(base_lr = 10e-5, max_lr = 10e-4, step_size = step_size, mode='triangular2')
 
             train_gen = image_generator(TRAIN_IDS, path_img, path_mask, batch_size = BATCH_SIZE, patch_size = PATCH_SZ)
