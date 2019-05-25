@@ -22,8 +22,8 @@ N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
 N_EPOCHS = 50
 
 #train input
-DATASET = 'potsdam' #'vaihingen'
-MODEL = 'U'#'W'
+DATASET = 'vaihingen' #'vaihingen'
+MODEL = 'W'#'W'
 ID = '2'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
