@@ -23,9 +23,9 @@ N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
 N_EPOCHS = 50
 
 #train input
-DATASET = 'potsdam' #'potsdam'
+DATASET = 'vaihingen' #'potsdam'
 MODEL = 'W'#'W'
-ID = '6'
+ID = '5'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
