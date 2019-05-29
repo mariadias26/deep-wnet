@@ -14,21 +14,18 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
-#config = tf.ConfigProto()
-#config.gpu_options.allow_growth = True
-#sess = tf.Session(config=config)
-
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.8)
-sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
 
 N_BANDS = 3
 N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
 N_EPOCHS = 50
 
 #train input
-DATASET = 'vaihingen' #'potsdam'
+DATASET = 'potsdam' #'potsdam'
 MODEL = 'W'#'W'
-ID = '0_1'
+ID = '6'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
@@ -81,7 +78,7 @@ if __name__ == '__main__':
             model_checkpoint = ModelCheckpoint(weights_path, monitor='val_loss', save_best_only=True, mode = 'min')
             csv_logger = CSVLogger('log_unet.csv', append=True, separator=';')
             #tensorboard = TensorBoard(log_dir='./tensorboard_unet/', write_graph=True, write_images=True)
-            step_size = (STEPS_PER_EPOCH//BATCH_SIZE)*4
+            step_size = (STEPS_PER_EPOCH//BATCH_SIZE)*8
             clr = CyclicLR(base_lr = 10e-5, max_lr = 10e-4, step_size = step_size, mode='triangular2')
 
             train_gen = image_generator(TRAIN_IDS, path_img, path_mask, batch_size = BATCH_SIZE, patch_size = PATCH_SZ)
