@@ -8,7 +8,7 @@ from keras.utils import plot_model
 from keras import backend as K
 from loss import *
 from lovasz_losses_tf import *
-from attn_augconv import *
+from se import *
 
 
 def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_factor=2):
@@ -24,6 +24,7 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     conv1 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv1_2')(actv1)
     actv1 = LeakyReLU(name = 'actv1_2')(conv1)
     pool1 = MaxPooling2D(pool_size=(2, 2), name = 'maxpool1')(actv1)
+    pool1 = squeeze_excite_block(pool1)
     #pool1 = Dropout(droprate)(pool1)
 
     #Block2
