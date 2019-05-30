@@ -20,7 +20,7 @@ def get_rand_patch(img, mask, sz=160):
     :param sz: size of random patch
     :return: patch with shape (sz, sz, num_channels)
     """
-    assert len(img.shape) == 3 and img.shape[0] > sz and img.shape[1] > sz and img.shape[0:2] == mask.shape[0:2]
+    #assert len(img.shape) == 3 and img.shape[0] > sz and img.shape[1] > sz and img.shape[0:2] == mask.shape[0:2]
     xc = random.randint(0, img.shape[0] - sz)
     yc = random.randint(0, img.shape[1] - sz)
     patch_img = img[xc:(xc + sz), yc:(yc + sz)]
@@ -30,10 +30,10 @@ def get_rand_patch(img, mask, sz=160):
     random_transformation = np.random.randint(1,4)
     if random_transformation == 1:  # reverse first dimension
         patch_img = patch_img[::-1,:,:]
-        patch_mask = patch_mask[::-1,:,:]
+        patch_mask = patch_mask[::-1,:]
     elif random_transformation == 2:    # reverse second dimension
         patch_img = patch_img[:,::-1,:]
-        patch_mask = patch_mask[:,::-1,:]
+        patch_mask = patch_mask[:,::-1]
     #elif random_transformation == 3:    # brightness augment
     #    patch_img = brightness_augment(patch_img)
     else:

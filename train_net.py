@@ -14,18 +14,21 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-sess = tf.Session(config=config)
+#config = tf.ConfigProto()
+#config.gpu_options.allow_growth = True
+#sess = tf.Session(config=config)
+
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.8)
+sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 N_BANDS = 3
 N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
 N_EPOCHS = 50
 
 #train input
-DATASET = 'vaihingen' #'potsdam'
+DATASET = 'vaihingen' #'vaihingen'
 MODEL = 'W'#'W'
-ID = '5'
+ID = '7'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
@@ -47,7 +50,8 @@ elif DATASET == 'vaihingen':
     TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']
     VAL_IDS = ['5', '7', '23', '37']
     path_img = '/tmp/vaihingen/Images_lab/top_mosaic_09cm_area{}.tif'
-    path_mask = '/tmp/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
+    #path_mask = '/tmp/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
+    path_mask = './datasets/vaihingen/y_true/top_mosaic_09cm_area{}.tif'
     PATCH_SZ = 320   # should divide by 16
     BATCH_SIZE = 12
     STEPS_PER_EPOCH = 4000
