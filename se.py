@@ -2,7 +2,7 @@ from keras.layers import GlobalAveragePooling2D, Reshape, Dense, multiply, add, 
 from keras import backend as K
 
 
-def squeeze_excite_block(input, ratio=16):
+def squeeze_excite_block(input, ratio=2):
     ''' Create a channel-wise squeeze-excite block
     Args:
         input: input tensor
