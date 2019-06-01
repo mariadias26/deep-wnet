@@ -50,18 +50,18 @@ def get_n_instances(dataset):
     weights = {k: v/len(files) for k, v in weights.items()}
     return weights
 
-def dice_coef(y_true, y_pred, smooth=1e-7):
+def dice_coef(y_true, y_pred, smooth=1e-9):
     y_true_f = K.flatten(y_true)
     y_pred_f = K.flatten(y_pred)
     intersection = K.sum(y_true_f * y_pred_f)
-    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+    return 1.0 - ((2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth))
 
 """This simply calculates the dice score for each individual label, and then sums them together, and includes the background."""
 def dice_coef_multilabel(y_true, y_pred, n_classes=6):
-    dice=n_classes
-    for index in range(n_classes):
-        dice -= dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
-    return dice/n_classes
+    dice = 0.0
+    for index in range(n_classes): dice += dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
+    if dice == 0: return dice
+    return dice / n_classes
 
 def categorical_class_balanced_focal_loss(n_instances_per_class, beta, gamma=2.):
     """
