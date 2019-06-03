@@ -250,7 +250,6 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     conv18 = Conv2D(n_filters, (3, 3), padding='same', kernel_initializer = 'he_uniform', bias_initializer = 'he_uniform')(actv18)
     actv18 = LeakyReLU()(conv18)
 
-    #conv19 = Conv2D(n_classes, (1, 1), activation='sigmoid')(actv18)
     conv19 = Conv2D(n_channels, (1, 1), activation='sigmoid', name = 'output2')(actv18)
 
     output2 = conv19
@@ -266,7 +265,7 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
         return lovasz_softmax(y_pred, y_true)
 
     #n_instances_per_class = [v for k, v in get_n_instances(dataset).items()]
-    model.compile(optimizer=Adam(lr = 10e-5), loss=[keras_lovasz_softmax, mean_squared_error], loss_weights  = [0.95, 0.05])
-    #model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef_multilabel, mean_squared_error], loss_weights  = [0.95, 0.05])
+    #model.compile(optimizer=Adam(lr = 10e-5), loss=[keras_lovasz_softmax, mean_squared_error], loss_weights  = [0.95, 0.05])
+    model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef_multilabel, mean_squared_error], loss_weights  = [0.95, 0.05])
     #model.compile(optimizer=Adam(lr = 10e-5), loss=[categorical_class_balanced_focal_loss(n_instances_per_class, 0.99), mean_squared_error], loss_weights  = [0.95, 0.05])
     return model

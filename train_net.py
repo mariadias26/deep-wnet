@@ -28,7 +28,7 @@ N_EPOCHS = 50
 #train input
 DATASET = 'vaihingen' #'vaihingen'
 MODEL = 'W'#'W'
-ID = '7'
+ID = '8'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
@@ -51,7 +51,7 @@ elif DATASET == 'vaihingen':
     VAL_IDS = ['5', '7', '23', '37']
     path_img = '/home/mdias/deep-wnet/datasets/vaihingen/Images_lab/top_mosaic_09cm_area{}.tif'
     #path_mask = '/tmp/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
-    path_mask = '/home/mdias/deep-wnet/datasets/vaihingen/y_true/top_mosaic_09cm_area{}.tif'
+    path_mask = '/home/mdias/deep-wnet/datasets/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     PATCH_SZ = 320   # should divide by 16
     BATCH_SIZE = 8
     STEPS_PER_EPOCH = 4000
