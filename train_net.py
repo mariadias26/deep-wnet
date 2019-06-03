@@ -14,12 +14,12 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
-#config = tf.ConfigProto()
-#config.gpu_options.allow_growth = True
-#sess = tf.Session(config=config)
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.8)
-sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.8)
+#sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 N_BANDS = 3
 N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
