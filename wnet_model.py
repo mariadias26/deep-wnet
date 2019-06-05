@@ -3,6 +3,7 @@
 from keras.models import Model
 from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, concatenate, Conv2DTranspose, BatchNormalization, Dropout, LeakyReLU, Add
 from keras.optimizers import Adam
+from keras import losses
 from keras.initializers import he_uniform
 from keras.utils import plot_model
 from keras import backend as K
@@ -261,11 +262,14 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
         y_pred_f = K.flatten(y_pred)
         return K.mean(K.square(y_pred_f - y_true_f))
 
-    def keras_lovasz_softmax(y_true, y_pred):
-        return lovasz_softmax(y_pred, y_true)
+    #def keras_lovasz_softmax(y_true, y_pred):
+    #    return lovasz_softmax(y_pred, y_true)
+
+    def custom_loss(y_true, y_pred):
+        return dice_coef_multilabel(y_true, y_pred) + losses.binary_crossentropy(y_true, y_pred)
 
     #n_instances_per_class = [v for k, v in get_n_instances(dataset).items()]
-    #model.compile(optimizer=Adam(lr = 10e-5), loss=[keras_lovasz_softmax, mean_squared_error], loss_weights  = [0.95, 0.05])
-    model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef_multilabel, mean_squared_error], loss_weights  = [0.95, 0.05])
+    model.compile(optimizer=Adam(lr = 10e-5), loss=[custom_loss, mean_squared_error], loss_weights  = [0.95, 0.05], metrics=["accuracy"])
+    #model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef_multilabel, mean_squared_error], loss_weights  = [0.95, 0.05])
     #model.compile(optimizer=Adam(lr = 10e-5), loss=[categorical_class_balanced_focal_loss(n_instances_per_class, 0.99), mean_squared_error], loss_weights  = [0.95, 0.05])
     return model

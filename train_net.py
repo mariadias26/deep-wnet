@@ -14,12 +14,12 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-sess = tf.Session(config=config)
+#config = tf.ConfigProto()
+#config.gpu_options.allow_growth = True
+#sess = tf.Session(config=config)
 
-#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.8)
-#sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.83)
+sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 N_BANDS = 3
 N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
@@ -28,7 +28,7 @@ N_EPOCHS = 50
 #train input
 DATASET = 'vaihingen' #'vaihingen'
 MODEL = 'W'#'W'
-ID = '8'
+ID = '10'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
@@ -53,10 +53,10 @@ elif DATASET == 'vaihingen':
     #path_mask = '/tmp/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     path_mask = '/home/mdias/deep-wnet/datasets/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     PATCH_SZ = 320   # should divide by 16
-    BATCH_SIZE = 8
+    BATCH_SIZE = 10
     STEPS_PER_EPOCH = 4000
     VALIDATION_STEPS = 1000
-    MAX_QUEUE = 10
+    MAX_QUEUE = 12
 
 def get_model():
     if MODEL == 'U':
