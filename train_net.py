@@ -18,7 +18,7 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 #config.gpu_options.allow_growth = True
 #sess = tf.Session(config=config)
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.83)
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.9)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 N_BANDS = 3
@@ -28,13 +28,13 @@ N_EPOCHS = 50
 #train input
 DATASET = 'vaihingen' #'vaihingen'
 MODEL = 'W'#'W'
-ID = '10'
+ID = '11'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
     TRAIN_IDS = ['2_10','2_11','3_10','3_11','4_10','4_11','5_10','5_11','6_7','6_8','6_9','6_10','6_11','7_7','7_8','7_9','7_10','7_11']
     VAL_IDS = ['2_12','3_12','4_12','5_12','6_12','7_12']
-    path_img = '/home/mdias/deep-wnet/datasets/potsdam/Images_lab/top_potsdam_{}_RGB.tif'
+    path_img = '/home/mdias/deep-wnet/datasets/potsdam/Images_lab_hist/top_potsdam_{}_RGB.tif'
     path_mask = '/home/mdias/deep-wnet/datasets/potsdam/Masks/top_potsdam_{}_label.tif'
     PATCH_SZ = 320   # should divide by 16
     VALIDATION_STEPS = 2400
@@ -49,7 +49,7 @@ if DATASET == 'potsdam':
 elif DATASET == 'vaihingen':
     TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']
     VAL_IDS = ['5', '7', '23', '37']
-    path_img = '/home/mdias/deep-wnet/datasets/vaihingen/Images_lab/top_mosaic_09cm_area{}.tif'
+    path_img = '/home/mdias/deep-wnet/datasets/vaihingen/Images_lab_hist/top_mosaic_09cm_area{}.tif'
     #path_mask = '/tmp/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     path_mask = '/home/mdias/deep-wnet/datasets/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     PATCH_SZ = 320   # should divide by 16

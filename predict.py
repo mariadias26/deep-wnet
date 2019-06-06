@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import tifffile as tiff
 import cv2
 #from train_wnet import wnet_weights, get_model, PATCH_SZ, N_CLASSES
-from train_net import weights_path, get_model, PATCH_SZ, N_CLASSES, DATASET, MODEL, ID
+from train_net import weights_path, get_model, path_img, PATCH_SZ, N_CLASSES, DATASET, MODEL, ID
 from get_step import find_step
 from scipy import stats
 from sklearn.metrics import classification_report, accuracy_score
@@ -86,21 +86,20 @@ def mask_from_picture(picture):
   picture = picture.dot(np.array([65536, 256, 1], dtype='int32'))
   return mask[picture]
 
-def predict_all(step):
+def predict_all(step, path_img):
     model = get_model()
     print(weights_path)
     model.load_weights(weights_path)
     if DATASET == 'potsdam':
         test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
-        path_i = './datasets/potsdam/Images_lab/top_potsdam_{}_RGB.tif'
         path_m = './datasets/potsdam/5_Labels_all/top_potsdam_{}_label.tif'
-
     elif DATASET == 'vaihingen':
         test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
-        path_i = './datasets/vaihingen/test/Images_lab/top_mosaic_09cm_area{}.tif'
         path_m = './datasets/vaihingen/Ground_Truth/top_mosaic_09cm_area{}.tif'
-
+    path_i = path_img
     accuracy_all = []
+    path_results = './datasets/results/'+MODEL+'_'+DATASET+'_'+ID
+    if not os.path.exists(path_results): os.makedirs(path_results)
     for test_id in test:
         path_img = path_i.format(test_id)
         img = tiff.imread(path_img)
@@ -128,11 +127,8 @@ def predict_all(step):
         print(report)
         print('\nAccuracy', accuracy)
         accuracy_all.append(accuracy)
-        tiff.imsave('./datasets/results/'+MODEL+'_'+DATASET+'_'+ID+'/mask_{}.tif'.format(test_id), mask)
-        gc.collect()
-        gc.collect()
-        gc.collect()
-        sys.stdout.flush()
+        tiff.imsave(path_results + '/mask_{}.tif'.format(test_id), mask)
+
 
     print(accuracy_all)
     print(step,' Accuracy all', sum(accuracy_all)/len(accuracy_all))
@@ -142,4 +138,4 @@ def predict_all(step):
 
 step = 40
 print(step)
-predict_all(step)
+predict_all(step, path_img)
