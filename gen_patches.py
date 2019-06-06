@@ -26,15 +26,19 @@ def get_rand_patch(img, mask, sz=160):
     patch_mask = mask[xc:(xc + sz), yc:(yc + sz)]
 
     # Apply some random transformations
-    random_transformation = np.random.randint(1,4)
+    random_transformation = np.random.randint(1,6)
     if random_transformation == 1:  # reverse first dimension
         patch_img = patch_img[::-1,:,:]
         patch_mask = patch_mask[::-1,:]
     elif random_transformation == 2:    # reverse second dimension
         patch_img = patch_img[:,::-1,:]
         patch_mask = patch_mask[:,::-1]
-    #elif random_transformation == 3:    # brightness augment
-    #    patch_img = brightness_augment(patch_img)
+    elif random_transformation == 3:
+        patch_img = patch_img.transpose(1, 0, 2)
+        patch_mask = patch_mask.transpose(1, 0, 2)
+    elif random_transformation == 4:
+        patch_img = patch_img[::-1,::-1,:].transpose(1, 0, 2)
+        patch_mask = patch_mask[::-1,::-1,:].transpose(1, 0, 2)
     else:
         pass
 
