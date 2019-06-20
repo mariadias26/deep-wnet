@@ -14,12 +14,12 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
-#config = tf.ConfigProto()
-#config.gpu_options.allow_growth = True
-#sess = tf.Session(config=config)
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.9)
-sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.9)
+#sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 N_BANDS = 3
 N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
@@ -28,13 +28,13 @@ N_EPOCHS = 50
 #train input
 DATASET = 'vaihingen' #'vaihingen'
 MODEL = 'W'#'W'
-ID = '11'
+ID = '12'
 #UNET_WEIGHTS = 'weights_unet2/unet_weights.hdf5'
 
 if DATASET == 'potsdam':
     TRAIN_IDS = ['2_10','2_11','3_10','3_11','4_10','4_11','5_10','5_11','6_7','6_8','6_9','6_10','6_11','7_7','7_8','7_9','7_10','7_11']
     VAL_IDS = ['2_12','3_12','4_12','5_12','6_12','7_12']
-    path_img = '/home/mdias/deep-wnet/datasets/potsdam/Images_lab_hist/top_potsdam_{}_RGB.tif'
+    path_img = '/home/mdias/deep-wnet/datasets/potsdam/Images_l/top_potsdam_{}_RGB.tif'
     path_mask = '/home/mdias/deep-wnet/datasets/potsdam/Masks/top_potsdam_{}_label.tif'
     PATCH_SZ = 320   # should divide by 16
     VALIDATION_STEPS = 2400
@@ -49,13 +49,14 @@ if DATASET == 'potsdam':
 elif DATASET == 'vaihingen':
     TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']
     VAL_IDS = ['5', '7', '23', '37']
-    path_img = '/home/mdias/deep-wnet/datasets/vaihingen/Images_lab_hist/top_mosaic_09cm_area{}.tif'
+    path_img = '/home/mdias/deep-wnet/datasets/vaihingen/Images_l/top_mosaic_09cm_area{}.tif'
+    path_full_img = '/home/mdias/deep-wnet/datasets/vaihingen/Images_lab_hist/top_mosaic_09cm_area{}.tif'
     #path_mask = '/tmp/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     path_mask = '/home/mdias/deep-wnet/datasets/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     PATCH_SZ = 320   # should divide by 16
     BATCH_SIZE = 10
-    STEPS_PER_EPOCH = 4000
-    VALIDATION_STEPS = 1000
+    STEPS_PER_EPOCH = 5000
+    VALIDATION_STEPS = 1250
     MAX_QUEUE = 12
 
 def get_model():
@@ -85,8 +86,8 @@ if __name__ == '__main__':
             step_size = (STEPS_PER_EPOCH//BATCH_SIZE)*8
             clr = CyclicLR(base_lr = 10e-5, max_lr = 10e-4, step_size = step_size, mode='triangular2')
 
-            train_gen = image_generator(TRAIN_IDS, path_img, path_mask, batch_size = BATCH_SIZE, patch_size = PATCH_SZ)
-            val_gen = image_generator(VAL_IDS, path_img, path_mask, batch_size = BATCH_SIZE, patch_size = PATCH_SZ)
+            train_gen = image_generator(TRAIN_IDS, path_img, path_mask, path_full_img, batch_size = BATCH_SIZE, patch_size = PATCH_SZ)
+            val_gen = image_generator(VAL_IDS, path_img, path_mask, path_full_img, batch_size = BATCH_SIZE, patch_size = PATCH_SZ)
 
             model.fit_generator(train_gen,
                steps_per_epoch=STEPS_PER_EPOCH,
