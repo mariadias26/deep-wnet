@@ -45,10 +45,10 @@ def mask_from_picture(picture):
   picture = picture.dot(np.array([65536, 256, 1], dtype='int32'))
   return mask[picture]
 
-#path_mask_nb = './datasets/potsdam/5_Labels_all_noBoundary/top_potsdam_{}_label_noBoundary.tif'
-path_mask_nb = './datasets/vaihingen/Ground_Truth_noBoundary/top_mosaic_09cm_area{}_noBoundary.tif'
+#path_mask_nb = '/home/mdias/datasets/potsdam/5_Labels_all_noBoundary/top_potsdam_{}_label_noBoundary.tif'
+path_mask_nb = '/home/mdias/datasets/vaihingen/Ground_Truth_noBoundary/top_mosaic_09cm_area{}_noBoundary.tif'
 #path_mask_predict = './datasets/results/W_potsdam_1/mask_{}.tif'
-path_mask_predict = './datasets/results/W_vaihingen_10/mask_{}.tif'
+path_mask_predict = '/home/mdias/datasets/results/W_vaihingen_15/mask_{}.tif'
 accuracy_all = []
 all_reports = []
 for test_id in test:

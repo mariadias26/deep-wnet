@@ -19,7 +19,6 @@ def get_rand_patch(img, mask, sz=160):
     :param sz: size of random patch
     :return: patch with shape (sz, sz, num_channels)
     """
-    #assert len(img.shape) == 3 and img.shape[0] > sz and img.shape[1] > sz and img.shape[0:2] == mask.shape[0:2]
     xc = random.randint(0, img.shape[0] - sz)
     yc = random.randint(0, img.shape[1] - sz)
     patch_img = img[xc:(xc + sz), yc:(yc + sz)]
@@ -38,7 +37,7 @@ def get_rand_patch(img, mask, sz=160):
         patch_mask = patch_mask.transpose(1, 0, 2)
     elif random_transformation == 4:
         patch_img = patch_img[::-1,::-1,:].transpose(1, 0, 2)
-        patch_mask = patch_mask[::-1,::-1,:].transpose(1, 0, 2)
+        patch_mask = patch_mask[::-1,::-1].transpose(1, 0, 2)
     else:
         pass
 
