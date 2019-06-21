@@ -20,6 +20,7 @@ N_BANDS = 3
 N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
 N_EPOCHS = 50
 
+<<<<<<< HEAD
 DATASET = 'vaihingen'  # 'vaihingen'
 MODEL = 'W'
 ID = '15'
