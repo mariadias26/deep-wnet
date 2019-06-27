@@ -22,7 +22,8 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     conv1 = Conv2D(n_filters, (3, 3), padding='same', name='conv1_2')(actv1)
     actv1 = LeakyReLU(name='actv1_2')(conv1)
     pool1 = MaxPooling2D(pool_size=(2, 2), name='maxpool1')(actv1)
-    pool1 = channel_spatial_squeeze_excite(pool1)
+    pool1 = squeeze_excite_block(pool1)
+    #pool1 = channel_spatial_squeeze_excite(pool1)
 
     #Block2
     n_filters *= growth_factor
@@ -32,9 +33,9 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     conv2 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv2_2')(actv2)
     actv2 = LeakyReLU(name = 'actv2_2')(conv2)
     pool2 = MaxPooling2D(pool_size=(2, 2), name = 'maxpool2')(actv2)
-    pool2 = channel_spatial_squeeze_excite(pool2)
+    #pool2 = channel_spatial_squeeze_excite(pool2)
     pool2 = Dropout(droprate, name = 'dropout2')(pool2)
-    #pool2 = squeeze_excite_block(pool2)
+    pool2 = squeeze_excite_block(pool2)
 
     #Block3
     n_filters *= growth_factor
@@ -44,9 +45,9 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     conv3 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv3_2')(actv3)
     actv3 = LeakyReLU(name = 'actv3_2')(conv3)
     pool3 = MaxPooling2D(pool_size=(2, 2), name = 'maxpool3')(actv3)
-    pool3 = channel_spatial_squeeze_excite(pool3)
+    #pool3 = channel_spatial_squeeze_excite(pool3)
     pool3 = Dropout(droprate, name = 'dropout3')(pool3)
-    #pool3 = squeeze_excite_block(pool3)
+    pool3 = squeeze_excite_block(pool3)
 
     #Block4
     n_filters *= growth_factor
@@ -56,9 +57,9 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     conv4_0 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv4_0_2')(actv4_0)
     actv4_0 = LeakyReLU(name = 'actv4_2')(conv4_0)
     pool4_1 = MaxPooling2D(pool_size=(2, 2), name = 'maxpool4')(actv4_0)
-    pool4_1 = channel_spatial_squeeze_excite(pool4_1)
+    #pool4_1 = channel_spatial_squeeze_excite(pool4_1)
     pool4_1 = Dropout(droprate, name = 'dropout4')(pool4_1)
-    #pool4_1 = squeeze_excite_block(pool4_1)
+    pool4_1 = squeeze_excite_block(pool4_1)
 
     #Block5
     n_filters *= growth_factor
@@ -68,9 +69,9 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     conv4_1 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv5_2')(actv4_1)
     actv4_1 = LeakyReLU(name = 'actv5_2')(conv4_1)
     pool4_2 = MaxPooling2D(pool_size=(2, 2), name = 'maxpool5')(actv4_1)
-    pool4_2 = channel_spatial_squeeze_excite(pool4_2)
+    #pool4_2 = channel_spatial_squeeze_excite(pool4_2)
     pool4_2 = Dropout(droprate, name = 'dropout5')(pool4_2)
-    #pool4_2 = squeeze_excite_block(pool4_2)
+    pool4_2 = squeeze_excite_block(pool4_2)
 
     #Block6
     n_filters *= growth_factor
@@ -88,9 +89,9 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     actv6_1 = LeakyReLU(name = 'actv7_1')(conv6_1)
     conv6_1 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv7_2')(actv6_1)
     actv6_1 = LeakyReLU(name = 'actv7_2')(conv6_1)
-    conv6_1 = channel_spatial_squeeze_excite(actv6_1)
-    conv6_1 = Dropout(droprate, name = 'dropout7')(conv6_1)
-    #conv6_1 = squeeze_excite_block(conv6_1)
+    #conv6_1 = channel_spatial_squeeze_excite(actv6_1)
+    conv6_1 = Dropout(droprate, name = 'dropout7')(actv6_1)
+    conv6_1 = squeeze_excite_block(conv6_1)
 
     #Block8
     n_filters //= growth_factor
@@ -100,9 +101,9 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     actv6_2 = LeakyReLU(name = 'actv8_1')(conv6_2)
     conv6_2 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv8_2')(actv6_2)
     actv6_2 = LeakyReLU(name = 'actv8_2')(conv6_2)
-    conv6_2 = channel_spatial_squeeze_excite(actv6_2)
-    conv6_2 = Dropout(droprate, name = 'dropout8')(conv6_2)
-    #conv6_2 = squeeze_excite_block(conv6_2)
+    #conv6_2 = channel_spatial_squeeze_excite(actv6_2)
+    conv6_2 = Dropout(droprate, name = 'dropout8')(actv6_2)
+    conv6_2 = squeeze_excite_block(conv6_2)
 
     #Block9
     n_filters //= growth_factor
@@ -112,9 +113,9 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     actv7 = LeakyReLU(name = 'actv9_1')(conv7)
     conv7 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv9_2')(actv7)
     actv7 = LeakyReLU(name = 'actv9_2')(conv7)
-    conv7 = channel_spatial_squeeze_excite(actv7)
-    conv7 = Dropout(droprate, name = 'dropout9')(conv7)
-    #conv7 = squeeze_excite_block(conv7)
+    #conv7 = channel_spatial_squeeze_excite(actv7)
+    conv7 = Dropout(droprate, name = 'dropout9')(actv7)
+    conv7 = squeeze_excite_block(conv7)
 
     #Block10
     n_filters //= growth_factor
@@ -124,9 +125,9 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     actv8 = LeakyReLU(name = 'actv10_1')(conv8)
     conv8 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv10_2')(actv8)
     conv8 = LeakyReLU(name = 'actv10_2')(conv8)
-    conv8 = channel_spatial_squeeze_excite(conv8)
+    #conv8 = channel_spatial_squeeze_excite(conv8)
     conv8 = Dropout(droprate, name = 'dropout10')(conv8)
-    #conv8 = squeeze_excite_block(conv8)
+    conv8 = squeeze_excite_block(conv8)
 
     #Block11
     n_filters //= growth_factor
@@ -135,8 +136,8 @@ def wnet_model(dataset, n_classes=5, im_sz=160, n_channels=3, n_filters_start=32
     actv9 = LeakyReLU(name='actv11_1')(conv9)
     conv9 = Conv2D(n_filters, (3, 3), padding='same', name = 'conv11_2')(actv9)
     actv9 = LeakyReLU(name = 'actv11_2')(conv9)
-    actv9 = channel_spatial_squeeze_excite(actv9)
-    #actv9 = squeeze_excite_block(actv9)
+    #actv9 = channel_spatial_squeeze_excite(actv9)
+    actv9 = squeeze_excite_block(actv9)
 
     output1 = Conv2D(n_classes, (1, 1), activation='softmax', name = 'output1')(actv9)
 

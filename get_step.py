@@ -1,19 +1,16 @@
 import tifffile as tiff
-import cv2
 import numpy as np
 from os import listdir
 from os.path import isfile, join
 
-def find_step(img, patch_sz, id):
+
+def find_step(img, patch_sz, id, min_range = 16, max_range = 35):
   x_original, y_original, ch = img.shape
   img_x, img_y, ch = img.shape
   to_iterate = 'x'
   if id == '38':
       min_range = 20
       max_range = 40
-  else:
-      min_range = 16
-      max_range = 35
   while True:
     for i in range(min_range, max_range):
       a = (img_x - patch_sz)/i

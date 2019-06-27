@@ -11,12 +11,12 @@ from skimage import exposure
 dataset = input('Potsdam (p) or Vaihingen (v) dataset? ')
 while True:
     if dataset == 'p':
-        path_img = './datasets/potsdam/Images/'
-        new_path_img = './datasets/potsdam/Images_l/'
+        path_img = '/home/mdias/datasets/potsdam/Images/'
+        new_path_img = '/home/mdias/datasets/potsdam/Images_l/'
         break
     elif dataset == 'v':
-        path_img = './datasets/vaihingen/Images/'
-        new_path_img = './datasets/vaihingen/Images_l/'
+        path_img = '/home/mdias/datasets/vaihingen/Images/'
+        new_path_img = '/home/mdias/datasets/vaihingen/Images_l/'
         break
     else:
         dataset = input('p or v?')

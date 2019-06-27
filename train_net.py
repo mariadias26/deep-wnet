@@ -20,10 +20,9 @@ N_BANDS = 3
 N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
 N_EPOCHS = 50
 
-<<<<<<< HEAD
 DATASET = 'vaihingen'  # 'vaihingen'
 MODEL = 'W'
-ID = '15'
+ID = '14'
 
 if DATASET == 'potsdam':
     TRAIN_IDS = ['2_10', '2_11', '3_10', '3_11', '4_10', '4_11', '5_10', '5_11', '6_7', '6_8', '6_9', '6_10', '6_11',
@@ -44,7 +43,8 @@ if DATASET == 'potsdam':
 elif DATASET == 'vaihingen':
     TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']
     VAL_IDS = ['5', '7', '23', '37']
-    path_img = '/home/mdias/datasets/vaihingen/Images_lab_hist/top_mosaic_09cm_area{}.tif'
+    path_img = '/home/mdias/datasets/vaihingen/Images_l/top_mosaic_09cm_area{}.tif'
+    path_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist/top_mosaic_09cm_area{}.tif'
     path_mask = '/home/mdias/datasets/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
     PATCH_SZ = 320  # should divide by 16
     BATCH_SIZE = 10
@@ -78,8 +78,8 @@ if __name__ == '__main__':
         step_size = (STEPS_PER_EPOCH // BATCH_SIZE) * 8
         clr = CyclicLR(base_lr=10e-5, max_lr=10e-4, step_size=step_size, mode='triangular2')
 
-        train_gen = image_generator(TRAIN_IDS, path_img, path_mask, batch_size=BATCH_SIZE, patch_size=PATCH_SZ)
-        val_gen = image_generator(VAL_IDS, path_img, path_mask, batch_size=BATCH_SIZE, patch_size=PATCH_SZ)
+        train_gen = image_generator(TRAIN_IDS, path_img, path_mask, path_full_img, batch_size = BATCH_SIZE, patch_size = PATCH_SZ)
+        val_gen = image_generator(VAL_IDS, path_img, path_mask, path_full_img, batch_size = BATCH_SIZE, patch_size = PATCH_SZ)
 
         model.fit_generator(train_gen,
                             steps_per_epoch=STEPS_PER_EPOCH,

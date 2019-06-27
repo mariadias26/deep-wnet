@@ -8,7 +8,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tifffile as tiff
 import cv2
-#from train_wnet import wnet_weights, get_model, PATCH_SZ, N_CLASSES
 from train_net import weights_path, get_model, path_img, PATCH_SZ, N_CLASSES, DATASET, MODEL, ID
 from get_step import find_step
 from scipy import stats
@@ -33,24 +32,20 @@ def reconstruct_patches(patches, image_size, step):
     n_w = int((i_w - p_w) / step + 1)
     for p, (i, j) in zip(patches, product(range(n_h), range(n_w))):
         img[i * step:i * step + p_h, j * step:j * step + p_w] += p
-    #for p, (i, j) in zip(patches, product(range(n_h), range(n_w))):
         patch_count[i * step:i * step + p_h, j * step:j * step + p_w] += 1
     print('MAX time seen', np.amax(patch_count))
     return img/patch_count
 
 def predict(x, model, patch_sz=160, n_classes=5, step = 142):
-    dim_x, dim_y, dim = x.shape
-    patches = patchify(x, (patch_sz, patch_sz, x.ndim), step = step)
-    width_window, height_window, z, width_x, height_y, num_channel = patches.shape
-    patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, num_channel))
+    dim_x, dim_y = x.shape
+    patches = patchify(x, (patch_sz, patch_sz), step = step)
+    width_window, height_window, width_x, height_y= patches.shape
+    patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, 1))
     predict = model.predict(patches)
-    #predict = model.predict(patches, batch_size=50)
     patches_predict = predict[0]
-    #patches_predict = predict
     prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
-    #new_image = reconstruct_patches(image_predict, (dim_x, dim_y, dim), step)
 
-    return prediction#, new_image
+    return prediction
 
 def picture_from_mask(mask):
     colors = {
