@@ -19,25 +19,25 @@ def find_step(img, patch_sz, id, min_range = 16, max_range = 35):
         return i, img_x, img_y, x_original, y_original
       elif int(a) == a:
         y = img_y
-        while (y - img_y) < 10 :
+        while (img_y - y) < 10 :
           b = (y - patch_sz)/i
           if int(b) == b:
             return i, img_x, y, x_original, y_original
           else:
-            y +=1
+            y -=1
       elif int(b) == b:
         x  = img_x
-        while (x - img_x) < 10:
+        while (img_x - x) < 10:
           a = (x - patch_sz)/i
           if int(a) == a:
             return i, x, img_y, x_original, y_original
           else:
-            x +=1
+            x -=1
     if to_iterate == 'x':
-      img_x+=1
+      img_x-=1
       to_iterate = 'y'
     else:
-      img_y+=1
+      img_y-=1
       to_iterate = 'x'
 
 

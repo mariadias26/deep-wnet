@@ -29,8 +29,7 @@ for id in val_ids:
         step, x_padding, y_padding, x_original, y_original = find_step(img, PATCH_SZ, id, 35, 60)
         print('Step: ', step, '\nx_padding: ', x_padding, '\ny_padding: ', y_padding, '\nx_original: ', x_original,
               '\ny_original: ', y_original)
-        img = np.asarray([np.pad(img[:, :, x], ((0, x_padding - x_original,), (0, y_padding - y_original,)), 'edge') for
-                          x in range(dim)]).transpose((1, 2, 0))
+        img = img[:x_padding, :y_padding, :]
         patches = patchify(img, (PATCH_SZ, PATCH_SZ, dim), step = step)
         print(patches.shape)
         width_window, height_window, z, width_x, height_y, dim = patches.shape

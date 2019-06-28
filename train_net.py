@@ -22,7 +22,7 @@ N_EPOCHS = 50
 
 DATASET = 'vaihingen'  # 'vaihingen'
 MODEL = 'W'
-ID = '14'
+ID = '18'
 
 if DATASET == 'potsdam':
     TRAIN_IDS = ['2_10', '2_11', '3_10', '3_11', '4_10', '4_11', '5_10', '5_11', '6_7', '6_8', '6_9', '6_10', '6_11',
@@ -46,10 +46,17 @@ elif DATASET == 'vaihingen':
     path_img = '/home/mdias/datasets/vaihingen/Images_l/top_mosaic_09cm_area{}.tif'
     path_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist/top_mosaic_09cm_area{}.tif'
     path_mask = '/home/mdias/datasets/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
+
+    # Val paths
+    path_patch_img = '/home/mdias/datasets/vaihingen/Images_l_patch/'
+    path_patch_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist_patch/'
+    path_patch_mask = '/home/mdias/datasets/vaihingen/Masks_patch/'
+
     PATCH_SZ = 320  # should divide by 16
     BATCH_SIZE = 10
     STEPS_PER_EPOCH = 5000
-    VALIDATION_STEPS = 1250
+    STEPS_PER_EPOCH = 10
+    VALIDATION_STEPS = 599
     MAX_QUEUE = 12
 
 
@@ -79,7 +86,7 @@ if __name__ == '__main__':
         clr = CyclicLR(base_lr=10e-5, max_lr=10e-4, step_size=step_size, mode='triangular2')
 
         train_gen = image_generator(TRAIN_IDS, path_img, path_mask, path_full_img, batch_size = BATCH_SIZE, patch_size = PATCH_SZ)
-        val_gen = image_generator(VAL_IDS, path_img, path_mask, path_full_img, batch_size = BATCH_SIZE, patch_size = PATCH_SZ)
+        val_gen = val_generator(path_patch_img, path_patch_full_img, path_patch_mask, batch_size = BATCH_SIZE)
 
         model.fit_generator(train_gen,
                             steps_per_epoch=STEPS_PER_EPOCH,
