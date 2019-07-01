@@ -6,7 +6,6 @@ Maxim Berman 2018 ESAT-PSI KU Leuven (MIT License)
 from __future__ import print_function, division
 
 import tensorflow as tf
-import numpy as np
 
 
 def lovasz_grad(gt_sorted):
@@ -20,8 +19,6 @@ def lovasz_grad(gt_sorted):
     jaccard = 1. - intersection / union
     jaccard = tf.concat((jaccard[0:1], jaccard[1:] - jaccard[:-1]), 0)
     return jaccard
-
-
 
 # --------------------------- MULTICLASS LOSSES ---------------------------
 

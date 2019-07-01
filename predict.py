@@ -1,12 +1,13 @@
 from __future__ import print_function
 import math
 import os
+#os.environ["CUDA_VISIBLE_DEVICES"]="-1"
+#import tensorflow as tf
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import tifffile as tiff
 import cv2
-#from train_wnet import wnet_weights, get_model, PATCH_SZ, N_CLASSES
 from train_net import weights_path, get_model, path_img, PATCH_SZ, N_CLASSES, DATASET, MODEL, ID
 from get_step import find_step
 from scipy import stats
@@ -31,7 +32,6 @@ def reconstruct_patches(patches, image_size, step):
     n_w = int((i_w - p_w) / step + 1)
     for p, (i, j) in zip(patches, product(range(n_h), range(n_w))):
         img[i * step:i * step + p_h, j * step:j * step + p_w] += p
-    #for p, (i, j) in zip(patches, product(range(n_h), range(n_w))):
         patch_count[i * step:i * step + p_h, j * step:j * step + p_w] += 1
     print('MAX time seen', np.amax(patch_count))
     return img/patch_count
@@ -41,7 +41,7 @@ def predict(x, model, patch_sz=160, n_classes=5, step = 142):
     patches = patchify(x, (patch_sz, patch_sz), step = step)
     width_window, height_window, width_x, height_y= patches.shape
     patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, 1))
-    predict = model.predict(patches, batch_size=1)
+    predict = model.predict(patches)
     patches_predict = predict[0]
     prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
 
@@ -89,7 +89,11 @@ def predict_all(step, path_img):
     model.load_weights(weights_path)
     if DATASET == 'potsdam':
         test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
+<<<<<<< HEAD
         path_m = '/home/mdias/datasets/potsdam/5_Labels_all/top_potsdam_{}_label.tif'
+=======
+        path_m = '/home/mdias/datasets/potsdam/test/5_Labels_all/top_potsdam_{}_label.tif'
+>>>>>>> 4cf6a88fd2ab072b9fbadf1bc4d3ece0576ddae7
     elif DATASET == 'vaihingen':
         test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
         path_m = '/home/mdias/datasets/vaihingen/Ground_Truth/top_mosaic_09cm_area{}.tif'
@@ -133,6 +137,6 @@ def predict_all(step, path_img):
 
 
 
-step = 40
+step = 20
 print(step)
 predict_all(step, path_img)

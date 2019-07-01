@@ -1,6 +1,7 @@
 import tifffile as tiff
 import numpy as np
 from os import listdir
+import os
 from os.path import isfile, join
 
 
@@ -25,16 +26,18 @@ def mask_from_picture(picture):
 dataset = input('Potsdam (p) or Vaihingen (v) dataset? ')
 while True:
     if dataset == 'p':
-        path_img = './datasets/potsdam/Ground_Truth/'
-        new_path_img = './datasets/potsdam/y_true/'
+        path_img = '/home/mdias/datasets/potsdam/5_Labels_all/'
+        new_path_img = '/home/mdias/datasets/potsdam/y_true/'
         break
     elif dataset == 'v':
-        path_img = './datasets/vaihingen/Ground_Truth/'
-        new_path_img = './datasets/vaihingen/y_true/'
+        path_img = '/home/mdias/datasets/vaihingen/Ground_Truth/'
+        new_path_img = '/home/mdias/datasets/vaihingen/y_true/'
         break
     else:
         dataset = input('p or v?')
 
+if not os.path.exists(new_path_img):
+    os.makedirs(new_path_img)
 files = [f for f in listdir(path_img) if isfile(join(path_img, f))]
 for f in files:
     if '.tif' in f:
