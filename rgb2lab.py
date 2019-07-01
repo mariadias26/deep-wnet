@@ -4,19 +4,19 @@ from os.path import isfile, join
 import tifffile as tiff
 import numpy as np
 from tqdm import tqdm
-from skimage.color import rgb2lab, lab2rgb
-from skimage import exposure, img_as_float
+from skimage.color import rgb2lab
+from skimage import exposure
 
 
 dataset = input('Potsdam (p) or Vaihingen (v) dataset? ')
 while True:
     if dataset == 'p':
-        path_img = './datasets/potsdam/Images/'
-        new_path_img = './datasets/potsdam/Images_l/'
+        path_img = '/home/mdias/datasets/potsdam/Images/'
+        new_path_img = '/home/mdias/datasets/potsdam/Images_lab_hist/'
         break
     elif dataset == 'v':
-        path_img = './datasets/vaihingen/Images/'
-        new_path_img = './datasets/vaihingen/Images_l/'
+        path_img = '/home/mdias/datasets/vaihingen/Images/'
+        new_path_img = '/home/mdias/datasets/vaihingen/Images_lab_hist/'
         break
     else:
         dataset = input('p or v?')
@@ -29,9 +29,7 @@ for f in tqdm(files):
         p2, p98 = np.percentile(img, (2, 98))
         new_img = exposure.rescale_intensity(img, in_range=(p2, p98))
         lab_img = rgb2lab(new_img)
-        lab_img[:,:,0] = lab_img[:,:,0]/100
-        lab_img[:,:,1] = np.interp(lab_img[:,:,1], (-128, 128), (0, 1))
-        lab_img[:,:,2] = np.interp(lab_img[:,:,2], (-128, 128), (0, 1))
-        lab_img = lab_img[:,:,0]
-        lab_img = np.expand_dims(lab_img, axis=-1) 
+        lab_img[:, :, 0] = lab_img[:, :, 0]/100
+        lab_img[:, :, 1] = np.interp(lab_img[:, :, 1], (-128, 128), (0, 1))
+        lab_img[:, :, 2] = np.interp(lab_img[:, :, 2], (-128, 128), (0, 1))
         tiff.imsave(new_path_img+f, lab_img)

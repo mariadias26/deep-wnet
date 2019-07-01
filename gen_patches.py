@@ -1,6 +1,5 @@
 import random
 import numpy as np
-from skimage.color import rgb2lab, lab2rgb
 #import cv2
 
 '''
@@ -12,7 +11,6 @@ def brightness_augment(img, factor=1):
     rgb = cv2.cvtColor(np.array(hsv, dtype=np.uint8), cv2.COLOR_HSV2RGB)
     return rgb
 '''
-
 def get_rand_patch(img, mask, full_img, sz=160):
     """
     :param img: ndarray with shape (x_sz, y_sz, num_channels)

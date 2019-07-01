@@ -37,18 +37,15 @@ def reconstruct_patches(patches, image_size, step):
     return img/patch_count
 
 def predict(x, model, patch_sz=160, n_classes=5, step = 142):
-    dim_x, dim_y, dim = x.shape
-    patches = patchify(x, (patch_sz, patch_sz, x.ndim), step = step)
-    width_window, height_window, z, width_x, height_y, num_channel = patches.shape
-    patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, num_channel))
-
-    predict = model.predict(patches, batch_size=50)
+    dim_x, dim_y = x.shape
+    patches = patchify(x, (patch_sz, patch_sz), step = step)
+    width_window, height_window, width_x, height_y= patches.shape
+    patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, 1))
+    predict = model.predict(patches, batch_size=1)
     patches_predict = predict[0]
-    #patches_predict = predict
     prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
-    #new_image = reconstruct_patches(image_predict, (dim_x, dim_y, dim), step)
 
-    return prediction#, new_image
+    return prediction
 
 def picture_from_mask(mask):
     colors = {
@@ -92,13 +89,13 @@ def predict_all(step, path_img):
     model.load_weights(weights_path)
     if DATASET == 'potsdam':
         test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
-        path_m = './datasets/potsdam/5_Labels_all/top_potsdam_{}_label.tif'
+        path_m = '/home/mdias/datasets/potsdam/5_Labels_all/top_potsdam_{}_label.tif'
     elif DATASET == 'vaihingen':
         test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
-        path_m = './datasets/vaihingen/Ground_Truth/top_mosaic_09cm_area{}.tif'
+        path_m = '/home/mdias/datasets/vaihingen/Ground_Truth/top_mosaic_09cm_area{}.tif'
     path_i = path_img
     accuracy_all = []
-    path_results = './datasets/results/'+MODEL+'_'+DATASET+'_'+ID
+    path_results = '/home/mdias/datasets/results/'+MODEL+'_'+DATASET+'_'+ID
     if not os.path.exists(path_results): os.makedirs(path_results)
     for test_id in test:
         path_img = path_i.format(test_id)
