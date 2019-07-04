@@ -5,16 +5,17 @@ from generator import *
 from clr_callback import *
 import os.path
 import tensorflow as tf
+import sys
 
 from keras.callbacks import CSVLogger
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
-#config = tf.ConfigProto()
-#config.gpu_options.allow_growth = True
-#sess = tf.Session(config=config)
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.9)
-sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.9)
+#sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
 N_BANDS = 3
 N_CLASSES = 6  # imp surface, car, building, background, low veg, tree
@@ -22,7 +23,7 @@ N_EPOCHS = 50
 
 DATASET = 'vaihingen'  # 'vaihingen'
 MODEL = 'W'
-ID = '18'
+ID = '23'
 
 if DATASET == 'potsdam':
     TRAIN_IDS = ['2_10', '2_11', '3_10', '3_11', '4_10', '4_11', '5_10', '5_11', '6_7', '6_8', '6_9', '6_10', '6_11',
@@ -63,7 +64,7 @@ def get_model():
     if MODEL == 'U':
         model = unet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
     elif MODEL == 'W':
-        model = wnet_model(DATASET, N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
+        model = wnet_model(N_CLASSES, PATCH_SZ, n_channels=N_BANDS)
     return model
 
 
@@ -95,6 +96,7 @@ if __name__ == '__main__':
                             verbose=1, shuffle=True, max_queue_size=MAX_QUEUE,
                             callbacks=[model_checkpoint, csv_logger, early_stopping, clr]
                             )
+
         return model
 
 
