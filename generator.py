@@ -14,12 +14,13 @@ def get_mask(path):
     mask = tiff.imread(path)
     return mask
 
-def image_generator(ids_file, path_image, path_mask, path_full_img, batch_size = 5, patch_size = 160):
-    ids_file_all = ids_file[:]
+
+def image_generator(ids_file, path_image, path_mask, path_full_img, files_weights, batch_size = 5, patch_size = 160):
+    seed = 0
     while True:
-        if not ids_file:
-            ids_file = ids_file_all[:]
-        id = ids_file.pop(np.random.choice(len(ids_file)))
+        np.random.seed(seed)
+        file_choice = np.random.choice((len(ids_file)), p=files_weights)
+        id = ids_file[file_choice]
         image = get_input(path_image.format(id))
         mask = get_mask(path_mask.format(id))
         full_img = get_input(path_full_img.format(id))
@@ -37,6 +38,7 @@ def image_generator(ids_file, path_image, path_mask, path_full_img, batch_size =
         batch_x = np.array( x )
         batch_y = np.array( y )
         batch_y2 = np.array( y2 )
+        seed+=1
         yield ( batch_x, [batch_y , batch_y2])
         #yield ( batch_x, batch_y )
 

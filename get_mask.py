@@ -41,6 +41,6 @@ if not os.path.exists(new_path_img):
 files = [f for f in listdir(path_img) if isfile(join(path_img, f))]
 for f in files:
     if '.tif' in f:
-        img = tiff.imread(path_img+f).transpose([2,0,1])
+        img = tiff.imread(path_img+f).transpose([2, 0, 1])
         new_img = mask_from_picture(img).astype('uint8')
         tiff.imsave(new_path_img+f, new_img)

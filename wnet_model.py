@@ -7,6 +7,7 @@ from keras.initializers import he_uniform
 from keras import losses
 from lovasz_losses_tf import *
 from loss import *
+from se import channel_spatial_squeeze_excite
 
 
 def conv2d_block(input_tensor, n_filters, init_seed=None, kernel_size=3):
@@ -22,7 +23,7 @@ def conv2d_block(input_tensor, n_filters, init_seed=None, kernel_size=3):
     return x
 
 
-def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_factor=2, droprate=0.25, init_seed=None):
+def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_factor=2, droprate=0.5, init_seed=None):
     inputs = Input((im_sz, im_sz, 1))
 
     # -------------Encoder
@@ -30,29 +31,34 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     n_filters = n_filters_start
     actv1 = conv2d_block(inputs, n_filters, init_seed=init_seed)
     pool1 = MaxPooling2D(pool_size=(2, 2))(actv1)
+    #pool1 = channel_spatial_squeeze_excite(pool1)
 
     # Block2
     n_filters *= growth_factor
     actv2 = conv2d_block(pool1, n_filters, init_seed = init_seed)
     pool2 = MaxPooling2D(pool_size=(2, 2))(actv2)
+    #pool2 = channel_spatial_squeeze_excite(pool2)
     pool2 = Dropout(droprate)(pool2)
 
     # Block3
     n_filters *= growth_factor
     actv3 = conv2d_block(pool2, n_filters, init_seed=init_seed)
     pool3 = MaxPooling2D(pool_size=(2, 2))(actv3)
+    #pool3 = channel_spatial_squeeze_excite(pool3)
     pool3 = Dropout(droprate)(pool3)
 
     # Block4
     n_filters *= growth_factor
     actv4 = conv2d_block(pool3, n_filters, init_seed=init_seed)
     pool4 = MaxPooling2D(pool_size=(2, 2))(actv4)
+    #pool4 = channel_spatial_squeeze_excite(pool4)
     pool4 = Dropout(droprate)(pool4)
 
     # Block5
     n_filters *= growth_factor
     actv5_new = conv2d_block(pool4, n_filters, init_seed=init_seed)
     pool5 = MaxPooling2D(pool_size=(2, 2))(actv5_new)
+    #pool5 = channel_spatial_squeeze_excite(pool5)
     pool5 = Dropout(droprate)(pool5)
 
     # Block6
@@ -66,6 +72,7 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     up7_new = concatenate([up7_new, actv5_new])
     conv7_new = Dropout(droprate)(up7_new)
     actv7_new = conv2d_block(conv7_new, n_filters, init_seed=init_seed)
+    #actv7_new = channel_spatial_squeeze_excite(actv7_new)
 
     # Block8
     n_filters //= growth_factor
@@ -73,6 +80,7 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     up8_new = concatenate([up8_new, actv4])
     conv8_new = Dropout(droprate)(up8_new)
     actv8_new = conv2d_block(conv8_new, n_filters, init_seed=init_seed)
+    #actv8_new = channel_spatial_squeeze_excite(actv8_new)
 
     # Block9
     n_filters //= growth_factor
@@ -80,6 +88,7 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     up9_new = concatenate([up9_new, actv3])
     conv9_new = Dropout(droprate)(up9_new)
     actv9_new = conv2d_block(conv9_new, n_filters, init_seed=init_seed)
+    #actv9_new = channel_spatial_squeeze_excite(actv9_new)
 
     # Block10
     n_filters //= growth_factor
@@ -87,6 +96,7 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     up10_new = concatenate([up10_new, actv2])
     conv10_new = Dropout(droprate)(up10_new)
     actv10_new = conv2d_block(conv10_new, n_filters, init_seed=init_seed)
+    #actv10_new = channel_spatial_squeeze_excite(actv10_new)
 
     # Block11
     n_filters //= growth_factor
@@ -94,6 +104,7 @@ def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_
     up11_new = concatenate([up11_new, actv1])
     conv11_new = Dropout(droprate)(up11_new)
     actv11_new = conv2d_block(conv11_new, n_filters, init_seed=init_seed)
+    #actv11_new = channel_spatial_squeeze_excite(actv11_new)
 
     output1 = Conv2D(n_classes, (1, 1), activation='softmax', name = 'output1')(actv11_new)
 
