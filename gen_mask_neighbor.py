@@ -9,7 +9,13 @@ def gen_mask():
     new_path_mask = '/home/mdias/datasets/vaihingen/Masks_neighbor'
     name_template = '/top_mosaic_09cm_area{}.tif'
 
-    neighbors = [(-1, 1), (0, 1), (1, 1), (-1, 0), (1, 0), (-1, -1), (0, -1), (1, -1)]
+    neighbors = []
+    f = 3
+    for i in range(-f, f + 1):
+        for j in range(-f, f + 1):
+            neighbors.append((i, j))
+    neighbors.remove((0, 0))
+    print(len(neighbors))
 
     if not os.path.exists(new_path_mask):
         os.makedirs(new_path_mask)
@@ -34,5 +40,3 @@ def gen_mask():
                             mask[i, j, label+1:] = 0.25 / 5
         tiff.imsave(new_path_mask+name_template.format(mask_id), mask)
 
-
-gen_mask()

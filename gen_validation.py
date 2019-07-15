@@ -5,6 +5,7 @@ from train_net import PATCH_SZ, N_CLASSES
 from patchify import patchify, unpatchify
 import tifffile as tiff
 
+
 val_ids = ['5', '7', '23', '37']
 name_template = '/top_mosaic_09cm_area{}.tif'
 

@@ -23,7 +23,7 @@ def conv2d_block(input_tensor, n_filters, init_seed=None, kernel_size=3):
     return x
 
 
-def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_factor=2, droprate=0.5, init_seed=None):
+def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_factor=2, droprate=0.25, init_seed=None):
     inputs = Input((im_sz, im_sz, 1))
 
     # -------------Encoder

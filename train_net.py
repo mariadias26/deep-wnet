@@ -1,5 +1,6 @@
 from unet_model import *
 from wnet_model import *
+from gen_mask_neighbor import *
 from gen_patches import *
 from generator import *
 from clr_callback import *
@@ -24,7 +25,8 @@ N_EPOCHS = 50
 
 DATASET = 'vaihingen'  # 'vaihingen'
 MODEL = 'W'
-ID = '31'
+ID = '33'
+#gen_mask()
 
 if DATASET == 'potsdam':
     TRAIN_IDS = ['2_10', '2_11', '3_10', '3_11', '4_10', '4_11', '5_10', '5_11', '6_7', '6_8', '6_9', '6_10', '6_11',
@@ -47,20 +49,21 @@ elif DATASET == 'vaihingen':
                  #'_rc_1', '_rc_3', '_rc_11', '_rc_13', '_rc_15', '_rc_17', '_rc_21', '_rc_26', '_rc_28', '_rc_30', '_rc_32', '_rc_34']
     VAL_IDS = ['5', '7', '23', '37']
     path_img = '/home/mdias/datasets/vaihingen/Images_l/top_mosaic_09cm_area{}.tif'
-    path_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist/top_mosaic_09cm_area{}.tif'
-    path_mask = '/home/mdias/datasets/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
+    path_full_img = '/home/mdias/datasets/vaihingen/Images_norm/top_mosaic_09cm_area{}.tif'
+    path_mask = '/home/mdias/datasets/vaihingen/Masks_neighbor/top_mosaic_09cm_area{}.tif'
 
     # Val paths
     path_patch_img = '/home/mdias/datasets/vaihingen/Images_l_patch/'
-    path_patch_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist_patch/'
-    path_patch_mask = '/home/mdias/datasets/vaihingen/Masks_patch/'
+    path_patch_full_img = '/home/mdias/datasets/vaihingen/Images_norm_patch/'
+    path_patch_mask = '/home/mdias/datasets/vaihingen/Masks_neighbor_patch/'
 
     PATCH_SZ = 320  # should divide by 16
     #BATCH_SIZE = 10
-    BATCH_SIZE = 8
+    BATCH_SIZE = 10
     #STEPS_PER_EPOCH = 5000
-    STEPS_PER_EPOCH = 6250
-    VALIDATION_STEPS = 855
+    STEPS_PER_EPOCH = 10000
+    #STEPS_PER_EPOCH = 6250
+    VALIDATION_STEPS = 684
     MAX_QUEUE = 10
 
 
