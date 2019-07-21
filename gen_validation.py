@@ -12,20 +12,23 @@ name_template = '/top_mosaic_09cm_area{}.tif'
 path_img = '/home/mdias/datasets/vaihingen/Images_l'
 path_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist'
 path_mask = '/home/mdias/datasets/vaihingen/Masks'
-path_mask_neighbor = '/home/mdias/datasets/vaihingen/Masks_neighbor'
-path_img_norm = '/home/mdias/datasets/vaihingen/Images_norm'
+
 
 path_patch_img = '/home/mdias/datasets/vaihingen/Images_l_patch'
 path_patch_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist_patch'
 path_patch_mask = '/home/mdias/datasets/vaihingen/Masks_patch'
-path_patch_mask_neighbor = '/home/mdias/datasets/vaihingen/Masks_neighbor_patch'
-path_patch_img_norm = '/home/mdias/datasets/vaihingen/Images_norm_patch'
 
-paths = {path_img: path_patch_img, path_full_img: path_patch_full_img, path_mask: path_patch_mask,
-         path_mask_neighbor: path_patch_mask_neighbor, path_img_norm: path_patch_img_norm}
+paths = {path_img: path_patch_img, path_full_img: path_patch_full_img, path_mask: path_patch_mask}
 
 for p in paths:
     if not os.path.exists(paths[p]): os.makedirs(paths[p])
+    for the_file in os.listdir(paths[p]):
+        file_path = os.path.join(paths[p], the_file)
+        try:
+            if os.path.isfile(file_path) and '.tif' in file_path and 'patch' in file_path:
+                os.unlink(file_path)
+        except Exception as e:
+            print(e)
 
 for id in val_ids:
     paths_origin = list(paths.keys())

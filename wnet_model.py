@@ -7,104 +7,132 @@ from keras.initializers import he_uniform
 from keras import losses
 from lovasz_losses_tf import *
 from loss import *
-from se import channel_spatial_squeeze_excite
+from spp import SpatialPyramidPooling
 
-
-def conv2d_block(input_tensor, n_filters, init_seed=None, kernel_size=3):
-    x = Conv2D(filters=n_filters, kernel_size=(kernel_size, kernel_size), kernel_initializer=he_uniform(seed=init_seed),
+def conv2d_normal_block(input_tensor, n_filters, init_seed=None):
+    x = Conv2D(filters=n_filters, kernel_size=(3, 3), kernel_initializer=he_uniform(seed=init_seed),
                bias_initializer=he_uniform(seed=init_seed), padding="same")(input_tensor)
     x = BatchNormalization()(x)
     x = Activation("relu")(x)
 
-    x = Conv2D(filters=n_filters, kernel_size=(kernel_size, kernel_size), kernel_initializer=he_uniform(seed=init_seed),
+    x = Conv2D(filters=n_filters, kernel_size=(3, 3), kernel_initializer=he_uniform(seed=init_seed),
                bias_initializer=he_uniform(seed=init_seed), padding="same")(x)
     x = BatchNormalization()(x)
     x = Activation("relu")(x)
     return x
 
+def conv2d_compress_block(input_tensor, n_filters, init_seed=None):
+    x = Conv2D(filters=n_filters, kernel_size=(1, 1), kernel_initializer=he_uniform(seed=init_seed),
+               bias_initializer=he_uniform(seed=init_seed), padding='same')(input_tensor)
+    x = BatchNormalization()(x)
+    x = Activation("relu")(x)
+    return x
+
+def conv2d_transpose_block(input_tensor, n_filters, init_seed=None):
+    x = Conv2DTranspose(n_filters, (3, 3), strides=(2, 2), padding='same')(input_tensor)
+    x = BatchNormalization()(x)
+    x = Activation("relu")(x)
+    return x
+
+def conv2_super_block(input_tensor, n_filters, init_seed=None):
+    x = Conv2D(filters=n_filters, kernel_size=(3, 3), kernel_initializer=he_uniform(seed=init_seed),
+               bias_initializer=he_uniform(seed=init_seed), padding="same")(input_tensor)
+    x = BatchNormalization()(x)
+    x = Activation("relu")(x)
+
+    y = Conv2D(filters=n_filters, kernel_size=(3, 3), kernel_initializer=he_uniform(seed=init_seed),
+               bias_initializer=he_uniform(seed=init_seed), padding="same")(concatenate([x, input_tensor]))
+    y = BatchNormalization()(y)
+    y = Activation("relu")(y)
+
+    return conv2d_compress_block(concatenate([x, y, input_tensor]), n_filters, init_seed=init_seed)
+
+
 
 def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_factor=2, droprate=0.25, init_seed=None):
-    inputs = Input((im_sz, im_sz, 1))
+    inputs = Input((im_sz, im_sz, 3))
 
     # -------------Encoder
     # Block1
     n_filters = n_filters_start
-    actv1 = conv2d_block(inputs, n_filters, init_seed=init_seed)
+    actv1 = conv2_super_block(inputs, n_filters, init_seed=init_seed)
     pool1 = MaxPooling2D(pool_size=(2, 2))(actv1)
-    #pool1 = channel_spatial_squeeze_excite(pool1)
 
     # Block2
     n_filters *= growth_factor
-    actv2 = conv2d_block(pool1, n_filters, init_seed = init_seed)
+    actv2 = conv2_super_block(pool1, n_filters, init_seed = init_seed)
     pool2 = MaxPooling2D(pool_size=(2, 2))(actv2)
-    #pool2 = channel_spatial_squeeze_excite(pool2)
     pool2 = Dropout(droprate)(pool2)
 
     # Block3
     n_filters *= growth_factor
-    actv3 = conv2d_block(pool2, n_filters, init_seed=init_seed)
+    actv3 = conv2_super_block(pool2, n_filters, init_seed=init_seed)
     pool3 = MaxPooling2D(pool_size=(2, 2))(actv3)
-    #pool3 = channel_spatial_squeeze_excite(pool3)
     pool3 = Dropout(droprate)(pool3)
 
     # Block4
     n_filters *= growth_factor
-    actv4 = conv2d_block(pool3, n_filters, init_seed=init_seed)
+    actv4 = conv2_super_block(pool3, n_filters, init_seed=init_seed)
     pool4 = MaxPooling2D(pool_size=(2, 2))(actv4)
-    #pool4 = channel_spatial_squeeze_excite(pool4)
     pool4 = Dropout(droprate)(pool4)
 
     # Block5
     n_filters *= growth_factor
-    actv5_new = conv2d_block(pool4, n_filters, init_seed=init_seed)
+    actv5_new = conv2_super_block(pool4, n_filters, init_seed=init_seed)
     pool5 = MaxPooling2D(pool_size=(2, 2))(actv5_new)
-    #pool5 = channel_spatial_squeeze_excite(pool5)
     pool5 = Dropout(droprate)(pool5)
 
     # Block6
     n_filters *= growth_factor
-    actv6 = conv2d_block(pool5, n_filters, init_seed=init_seed)
+    actv6 = conv2_super_block(pool5, n_filters, init_seed=init_seed)
 
     # -------------Decoder
     # Block7
     n_filters //= growth_factor
-    up7_new = Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same')(actv6)
+    up7_new = conv2d_transpose_block(actv6, n_filters, init_seed=init_seed)
     up7_new = concatenate([up7_new, actv5_new])
+    up7_new = conv2d_compress_block(up7_new, n_filters, init_seed=init_seed)
+
     conv7_new = Dropout(droprate)(up7_new)
-    actv7_new = conv2d_block(conv7_new, n_filters, init_seed=init_seed)
-    #actv7_new = channel_spatial_squeeze_excite(actv7_new)
+    actv7_new = conv2_super_block(conv7_new, n_filters, init_seed=init_seed)
 
     # Block8
     n_filters //= growth_factor
-    up8_new = Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same')(actv7_new)
+    up8_new = conv2d_transpose_block(actv7_new, n_filters, init_seed=init_seed)
     up8_new = concatenate([up8_new, actv4])
+    up8_new = conv2d_compress_block(up8_new, n_filters, init_seed=init_seed)
+
     conv8_new = Dropout(droprate)(up8_new)
-    actv8_new = conv2d_block(conv8_new, n_filters, init_seed=init_seed)
-    #actv8_new = channel_spatial_squeeze_excite(actv8_new)
+    actv8_new = conv2_super_block(conv8_new, n_filters, init_seed=init_seed)
 
     # Block9
     n_filters //= growth_factor
-    up9_new = Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same')(actv8_new)
+    up9_new = conv2d_transpose_block(actv8_new, n_filters, init_seed=init_seed)
     up9_new = concatenate([up9_new, actv3])
+    up9_new = conv2d_compress_block(up9_new, n_filters, init_seed=init_seed)
+
     conv9_new = Dropout(droprate)(up9_new)
-    actv9_new = conv2d_block(conv9_new, n_filters, init_seed=init_seed)
-    #actv9_new = channel_spatial_squeeze_excite(actv9_new)
+    actv9_new = conv2_super_block(conv9_new, n_filters, init_seed=init_seed)
+
 
     # Block10
     n_filters //= growth_factor
-    up10_new = Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same')(actv9_new)
+    up10_new = conv2d_transpose_block(actv9_new, n_filters, init_seed=init_seed)
     up10_new = concatenate([up10_new, actv2])
+    up10_new = conv2d_compress_block(up10_new, n_filters, init_seed=init_seed)
+
     conv10_new = Dropout(droprate)(up10_new)
-    actv10_new = conv2d_block(conv10_new, n_filters, init_seed=init_seed)
-    #actv10_new = channel_spatial_squeeze_excite(actv10_new)
+    actv10_new = conv2_super_block(conv10_new, n_filters, init_seed=init_seed)
+
 
     # Block11
     n_filters //= growth_factor
-    up11_new = Conv2DTranspose(n_filters, (2, 2), strides=(2, 2), padding='same')(actv10_new)
+    up11_new = conv2d_transpose_block(actv10_new, n_filters, init_seed=init_seed)
     up11_new = concatenate([up11_new, actv1])
+    up11_new = conv2d_compress_block(up11_new, n_filters, init_seed=init_seed)
+
     conv11_new = Dropout(droprate)(up11_new)
-    actv11_new = conv2d_block(conv11_new, n_filters, init_seed=init_seed)
-    #actv11_new = channel_spatial_squeeze_excite(actv11_new)
+    actv11_new = conv2_super_block(conv11_new, n_filters, init_seed=init_seed)
 
     output1 = Conv2D(n_classes, (1, 1), activation='softmax', name = 'output1')(actv11_new)
 

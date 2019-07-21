@@ -25,7 +25,7 @@ N_EPOCHS = 50
 
 DATASET = 'vaihingen'  # 'vaihingen'
 MODEL = 'W'
-ID = '33'
+ID = '39'
 #gen_mask()
 
 if DATASET == 'potsdam':
@@ -34,7 +34,8 @@ if DATASET == 'potsdam':
     VAL_IDS = ['2_12', '3_12', '4_12', '5_12', '6_12', '7_12']
     path_img = '/home/mdias/datasets/potsdam/Images_lab_hist/top_potsdam_{}_RGB.tif'
     path_mask = '/home/mdias/datasets/potsdam/Masks/top_potsdam_{}_label.tif'
-    PATCH_SZ = 320  # should divide by 16
+    #PATCH_SZ = 320  # should divide by 16
+    PATCH_SZ = 128
     VALIDATION_STEPS = 2400
     if MODEL == 'U':
         STEPS_PER_EPOCH = 8000
@@ -48,22 +49,20 @@ elif DATASET == 'vaihingen':
     TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']#,
                  #'_rc_1', '_rc_3', '_rc_11', '_rc_13', '_rc_15', '_rc_17', '_rc_21', '_rc_26', '_rc_28', '_rc_30', '_rc_32', '_rc_34']
     VAL_IDS = ['5', '7', '23', '37']
-    path_img = '/home/mdias/datasets/vaihingen/Images_l/top_mosaic_09cm_area{}.tif'
-    path_full_img = '/home/mdias/datasets/vaihingen/Images_norm/top_mosaic_09cm_area{}.tif'
-    path_mask = '/home/mdias/datasets/vaihingen/Masks_neighbor/top_mosaic_09cm_area{}.tif'
+    path_img = '/home/mdias/datasets/vaihingen/Images_lab_hist/top_mosaic_09cm_area{}.tif'
+    path_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist/top_mosaic_09cm_area{}.tif'
+    path_mask = '/home/mdias/datasets/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
 
     # Val paths
-    path_patch_img = '/home/mdias/datasets/vaihingen/Images_l_patch/'
-    path_patch_full_img = '/home/mdias/datasets/vaihingen/Images_norm_patch/'
-    path_patch_mask = '/home/mdias/datasets/vaihingen/Masks_neighbor_patch/'
+    path_patch_img = '/home/mdias/datasets/vaihingen/Images_lab_hist_patch/'
+    path_patch_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist_patch/'
+    path_patch_mask = '/home/mdias/datasets/vaihingen/Masks_patch/'
 
     PATCH_SZ = 320  # should divide by 16
-    #BATCH_SIZE = 10
-    BATCH_SIZE = 10
-    #STEPS_PER_EPOCH = 5000
+    BATCH_SIZE = 5
     STEPS_PER_EPOCH = 10000
-    #STEPS_PER_EPOCH = 6250
-    VALIDATION_STEPS = 684
+
+    VALIDATION_STEPS = 1369
     MAX_QUEUE = 10
 
 

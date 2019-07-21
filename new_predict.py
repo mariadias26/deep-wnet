@@ -35,28 +35,17 @@ def reconstruct_patches(patches, image_size, step):
         patch_count[i * step:i * step + p_h, j * step:j * step + p_w] += 1
     print('MAX time seen', np.amax(patch_count))
     return img/patch_count
-'''
+
 def predict(x, model, patch_sz=160, n_classes=5, step = 142):
     dim_x, dim_y = x.shape
     patches = patchify(x, (patch_sz, patch_sz), step = step)
     width_window, height_window, width_x, height_y= patches.shape
     patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, 1))
-    predict = model.predict(patches, batch_size = 1)
-    patches_predict = predict[0]
-    prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
+    predict = model.predict(patches)
+    patches_predict = predict[1]
+    prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, 3), step)
 
     return prediction
-'''
-def predict(x, model, patch_sz=160, n_classes=5, step = 142):
-    dim_x, dim_y, dim = x.shape
-    patches = patchify(x, (patch_sz, patch_sz, x.ndim), step = step)
-    width_window, height_window, z, width_x, height_y, num_channel = patches.shape
-    patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, num_channel))
-    predict = model.predict(patches)
-    patches_predict = predict[0]
-    prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
-
-    return prediction#, new_image
 
 def picture_from_mask(mask):
     colors = {
@@ -102,6 +91,7 @@ def predict_all(step, path_img):
         test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
         path_m = '/home/mdias/datasets/potsdam/5_Labels_all/top_potsdam_{}_label.tif'
     elif DATASET == 'vaihingen':
+        test = ['2']
         test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
         path_m = '/home/mdias/datasets/vaihingen/Ground_Truth/top_mosaic_09cm_area{}.tif'
     path_i = path_img
@@ -124,22 +114,23 @@ def predict_all(step, path_img):
             mask = mask[:x_original, :y_original, ]
             mask = mask.transpose([2,0,1])
 
-        prediction = picture_from_mask(mask)
-        target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
-        labels = list(range(len(target_labels)))
-        y_true = gt.ravel()
-        y_pred = np.argmax(mask, axis=0).ravel()
-        report = classification_report(y_true, y_pred, target_names = target_labels, labels = labels)
-        accuracy = accuracy_score(y_true, y_pred)
-        print('\n',test_id)
-        print(report)
-        print('\nAccuracy', accuracy)
-        accuracy_all.append(accuracy)
-        tiff.imsave(path_results + '/mask_{}.tif'.format(test_id), mask)
+        #prediction = picture_from_mask(mask)
+        #target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
+        #labels = list(range(len(target_labels)))
+        #y_true = gt.ravel()
+        #y_pred = np.argmax(mask, axis=0).ravel()
+        #report = classification_report(y_true, y_pred, target_names = target_labels, labels = labels)
+        #accuracy = accuracy_score(y_true, y_pred)
+        #print('\n',test_id)
+        #print(report)
+        #print('\nAccuracy', accuracy)
+        #accuracy_all.append(accuracy)
+        tiff.imsave('l_{}'.format(test_id), mask)
+        #tiff.imsave(path_results + '/mask_{}.tif'.format(test_id), mask)
 
 
-    print(accuracy_all)
-    print(step,' Accuracy all', sum(accuracy_all)/len(accuracy_all))
+    #print(accuracy_all)
+    #print(step,' Accuracy all', sum(accuracy_all)/len(accuracy_all))
 
 
 
