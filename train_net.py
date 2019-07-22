@@ -25,7 +25,7 @@ N_EPOCHS = 50
 
 DATASET = 'vaihingen'  # 'vaihingen'
 MODEL = 'W'
-ID = '39'
+ID = '40'
 #gen_mask()
 
 if DATASET == 'potsdam':
