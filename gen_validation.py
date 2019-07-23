@@ -9,12 +9,12 @@ import tifffile as tiff
 val_ids = ['5', '7', '23', '37']
 name_template = '/top_mosaic_09cm_area{}.tif'
 
-path_img = '/home/mdias/datasets/vaihingen/Images_l'
+path_img = '/home/mdias/datasets/vaihingen/Images_l_eq_hist'
 path_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist'
 path_mask = '/home/mdias/datasets/vaihingen/Masks'
 
 
-path_patch_img = '/home/mdias/datasets/vaihingen/Images_l_patch'
+path_patch_img = '/home/mdias/datasets/vaihingen/Images_l_eq_hist_patch'
 path_patch_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist_patch'
 path_patch_mask = '/home/mdias/datasets/vaihingen/Masks_patch'
 

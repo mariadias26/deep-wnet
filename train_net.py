@@ -25,7 +25,7 @@ N_EPOCHS = 50
 
 DATASET = 'vaihingen'  # 'vaihingen'
 MODEL = 'W'
-ID = '40'
+ID = '41'
 #gen_mask()
 
 if DATASET == 'potsdam':
@@ -49,12 +49,12 @@ elif DATASET == 'vaihingen':
     TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']#,
                  #'_rc_1', '_rc_3', '_rc_11', '_rc_13', '_rc_15', '_rc_17', '_rc_21', '_rc_26', '_rc_28', '_rc_30', '_rc_32', '_rc_34']
     VAL_IDS = ['5', '7', '23', '37']
-    path_img = '/home/mdias/datasets/vaihingen/Images_lab_hist/top_mosaic_09cm_area{}.tif'
+    path_img = '/home/mdias/datasets/vaihingen/Images_l_eq_hist/top_mosaic_09cm_area{}.tif'
     path_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist/top_mosaic_09cm_area{}.tif'
     path_mask = '/home/mdias/datasets/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
 
     # Val paths
-    path_patch_img = '/home/mdias/datasets/vaihingen/Images_lab_hist_patch/'
+    path_patch_img = '/home/mdias/datasets/vaihingen/Images_l_eq_hist_patch/'
     path_patch_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist_patch/'
     path_patch_mask = '/home/mdias/datasets/vaihingen/Masks_patch/'
 

@@ -35,7 +35,7 @@ def reconstruct_patches(patches, image_size, step):
         patch_count[i * step:i * step + p_h, j * step:j * step + p_w] += 1
     print('MAX time seen', np.amax(patch_count))
     return img/patch_count
-'''
+
 def predict(x, model, patch_sz=160, n_classes=5, step = 142):
     dim_x, dim_y = x.shape
     patches = patchify(x, (patch_sz, patch_sz), step = step)
@@ -57,7 +57,7 @@ def predict(x, model, patch_sz=160, n_classes=5, step = 142):
     prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
 
     return prediction#, new_image
-
+'''
 def picture_from_mask(mask):
     colors = {
         0: [255, 255, 255],   #imp surface

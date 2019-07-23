@@ -13,44 +13,45 @@ def conv2d_normal_block(input_tensor, n_filters, init_seed=None):
     x = Conv2D(filters=n_filters, kernel_size=(3, 3), kernel_initializer=he_uniform(seed=init_seed),
                bias_initializer=he_uniform(seed=init_seed), padding="same")(input_tensor)
     x = BatchNormalization()(x)
-    x = LeakyReLU()(x)
+    x = Activation("relu")(x)
 
     x = Conv2D(filters=n_filters, kernel_size=(3, 3), kernel_initializer=he_uniform(seed=init_seed),
                bias_initializer=he_uniform(seed=init_seed), padding="same")(x)
     x = BatchNormalization()(x)
-    x = LeakyReLU()(x)
+    x = Activation("relu")(x)
     return x
 
 def conv2d_compress_block(input_tensor, n_filters, init_seed=None):
     x = Conv2D(filters=n_filters, kernel_size=(1, 1), kernel_initializer=he_uniform(seed=init_seed),
                bias_initializer=he_uniform(seed=init_seed), padding='same')(input_tensor)
     x = BatchNormalization()(x)
-    x = LeakyReLU()(x)
+    x = Activation("relu")(x)
     return x
 
 def conv2d_transpose_block(input_tensor, n_filters, init_seed=None):
     x = Conv2DTranspose(n_filters, (3, 3), strides=(2, 2), padding='same')(input_tensor)
+    #x = AtrousConvolution2D(n_filters, (3, 3), atrous_rate=(2,2), border_mode = 'valid', init=he_uniform(seed=init_seed))(input_tensor)
     x = BatchNormalization()(x)
-    x = LeakyReLU()(x)
+    x = Activation("relu")(x)
     return x
 
 def conv2_super_block(input_tensor, n_filters, init_seed=None):
     x = Conv2D(filters=n_filters, kernel_size=(3, 3), kernel_initializer=he_uniform(seed=init_seed),
                bias_initializer=he_uniform(seed=init_seed), padding="same")(input_tensor)
     x = BatchNormalization()(x)
-    x = LeakyReLU()(x)
+    x = Activation("relu")(x)
 
     y = Conv2D(filters=n_filters, kernel_size=(3, 3), kernel_initializer=he_uniform(seed=init_seed),
                bias_initializer=he_uniform(seed=init_seed), padding="same")(concatenate([x, input_tensor]))
     y = BatchNormalization()(y)
-    y = LeakyReLU()(y)
+    y = Activation("relu")(y)
 
     return conv2d_compress_block(concatenate([x, y, input_tensor]), n_filters, init_seed=init_seed)
 
 
 
 def wnet_model(n_classes=5, im_sz=160, n_channels=3, n_filters_start=32, growth_factor=2, droprate=0.25, init_seed=None):
-    inputs = Input((im_sz, im_sz, 3))
+    inputs = Input((im_sz, im_sz, 1))
 
     # -------------Encoder
     # Block1
