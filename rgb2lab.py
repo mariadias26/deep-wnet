@@ -7,13 +7,15 @@ from tqdm import tqdm
 from skimage.color import rgb2lab
 from skimage import exposure
 import cv2
+from PIL import Image
+
 
 
 dataset = input('Potsdam (p) or Vaihingen (v) dataset? ')
 while True:
     if dataset == 'p':
         path_img = '/home/mdias/datasets/potsdam/Images/'
-        new_path_img = '/home/mdias/datasets/potsdam/Images_l_eq_hist/'
+        new_path_img = '/home/mdias/datasets/potsdam/Images_lab_hist/'
         break
     elif dataset == 'v':
         path_img = '/home/mdias/datasets/vaihingen/Images/'
@@ -33,7 +35,6 @@ for f in tqdm(files):
         lab_img[:, :, 0] = lab_img[:, :, 0]/100
         lab_img[:, :, 1] = np.interp(lab_img[:, :, 1], (-128, 128), (0, 1))
         lab_img[:, :, 2] = np.interp(lab_img[:, :, 2], (-128, 128), (0, 1))
-        lab_img = np.expand_dims(lab_img[:, :, 0], axis=2)
-        im = cv2.imread(path_img+f, 0)
-        eq = np.expand_dims(cv2.equalizeHist(im)/255, axis=2)
-        tiff.imsave(new_path_img+f, eq)
+        #lab_img = np.expand_dims(lab_img[:, :, 0], axis=2)
+        print(lab_img.shape)
+        tiff.imsave(new_path_img+f, lab_img)

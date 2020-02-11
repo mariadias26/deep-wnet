@@ -25,36 +25,41 @@ N_EPOCHS = 50
 
 DATASET = 'vaihingen'  # 'vaihingen'
 MODEL = 'W'
-ID = '41'
-#gen_mask()
+ID = '34'
 
 if DATASET == 'potsdam':
     TRAIN_IDS = ['2_10', '2_11', '3_10', '3_11', '4_10', '4_11', '5_10', '5_11', '6_7', '6_8', '6_9', '6_10', '6_11',
                  '7_7', '7_8', '7_9', '7_10', '7_11']
     VAL_IDS = ['2_12', '3_12', '4_12', '5_12', '6_12', '7_12']
     path_img = '/home/mdias/datasets/potsdam/Images_lab_hist/top_potsdam_{}_RGB.tif'
+    path_full_img = '/home/mdias/datasets/potsdam/Images_lab_hist/top_potsdam_{}_RGB.tif'
     path_mask = '/home/mdias/datasets/potsdam/Masks/top_potsdam_{}_label.tif'
-    #PATCH_SZ = 320  # should divide by 16
-    PATCH_SZ = 128
-    VALIDATION_STEPS = 2400
+
+    path_patch_img = '/home/mdias/datasets/potsdam/Images_l_patch/'
+    path_patch_full_img = '/home/mdias/datasets/potsdam/Images_lab_hist_patch/'
+    path_patch_mask = '/home/mdias/datasets/potsdam/Masks_patch/'
+    PATCH_SZ = 320  # should divide by 16
+    VALIDATION_STEPS = 7873
     if MODEL == 'U':
         STEPS_PER_EPOCH = 8000
         BATCH_SIZE = 32
         MAX_QUEUE = 30
     elif MODEL == 'W':
         STEPS_PER_EPOCH = 10000
-        BATCH_SIZE = 12
-        MAX_QUEUE = 10
+        #STEPS_PER_EPOCH = 50
+        BATCH_SIZE = 2
+        #BATCH_SIZE = 5
+        MAX_QUEUE = 30
 elif DATASET == 'vaihingen':
     TRAIN_IDS = ['1', '3', '11', '13', '15', '17', '21', '26', '28', '30', '32', '34']#,
                  #'_rc_1', '_rc_3', '_rc_11', '_rc_13', '_rc_15', '_rc_17', '_rc_21', '_rc_26', '_rc_28', '_rc_30', '_rc_32', '_rc_34']
     VAL_IDS = ['5', '7', '23', '37']
-    path_img = '/home/mdias/datasets/vaihingen/Images_l_eq_hist/top_mosaic_09cm_area{}.tif'
+    path_img = '/home/mdias/datasets/vaihingen/Images_l/top_mosaic_09cm_area{}.tif'
     path_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist/top_mosaic_09cm_area{}.tif'
     path_mask = '/home/mdias/datasets/vaihingen/Masks/top_mosaic_09cm_area{}.tif'
 
     # Val paths
-    path_patch_img = '/home/mdias/datasets/vaihingen/Images_l_eq_hist_patch/'
+    path_patch_img = '/home/mdias/datasets/vaihingen/Images_l_patch/'
     path_patch_full_img = '/home/mdias/datasets/vaihingen/Images_lab_hist_patch/'
     path_patch_mask = '/home/mdias/datasets/vaihingen/Masks_patch/'
 
@@ -107,6 +112,7 @@ if __name__ == '__main__':
         files_weights = get_files_weights(path_img, TRAIN_IDS)
         train_gen = image_generator(TRAIN_IDS, path_img, path_mask, path_full_img, files_weights, batch_size = BATCH_SIZE, patch_size = PATCH_SZ)
         val_gen = val_generator(path_patch_img, path_patch_full_img, path_patch_mask, batch_size = BATCH_SIZE)
+        print('\n\n\n', (next(train_gen)[1][0]).shape, '\n\n\n')
 
         model.fit_generator(train_gen,
                             steps_per_epoch=STEPS_PER_EPOCH,

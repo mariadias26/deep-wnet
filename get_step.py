@@ -8,9 +8,7 @@ def find_step_val(img, patch_sz, id, min_range = 16, max_range = 35):
   x_original, y_original, ch = img.shape
   img_x, img_y, ch = img.shape
   to_iterate = 'x'
-  if id == '38':
-      min_range = 20
-      max_range = 40
+
   while True:
     for i in range(min_range, max_range):
       a = (img_x - patch_sz)/i
@@ -39,14 +37,12 @@ def find_step_val(img, patch_sz, id, min_range = 16, max_range = 35):
     else:
       img_y-=1
       to_iterate = 'x'
-
-def find_step(img, patch_sz, id, min_range = 16, max_range = 35):
+#16,35
+def find_step(img, patch_sz, id, min_range = 220, max_range = 300):
   x_original, y_original, ch = img.shape
   img_x, img_y, ch = img.shape
   to_iterate = 'x'
-  if id == '38':
-      min_range = 20
-      max_range = 40
+
   while True:
     for i in range(min_range, max_range):
       a = (img_x - patch_sz)/i

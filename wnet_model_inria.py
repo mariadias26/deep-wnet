@@ -5,12 +5,6 @@ from keras.layers import *
 from keras.optimizers import Adam
 from keras.initializers import he_uniform
 from keras import losses
-from lovasz_losses_tf import *
-from loss import *
-
-
-def swish(x):
-    return K.sigmoid(x) * x
 
 
 def conv2d_normal_block(input_tensor, n_filters, init_seed=None):
@@ -140,7 +134,7 @@ def wnet_model(n_classes=7, im_sz=160, n_channels=3, n_filters_start=32, growth_
     conv11_new = Dropout(droprate)(up11_new)
     actv11_new = conv2_super_block(conv11_new, n_filters, init_seed=init_seed)
 
-    output1 = Conv2D(n_classes, (1, 1), activation='softmax', name = 'output1')(actv11_new)
+    output1 = Conv2D(n_classes, (1, 1), activation='sigmoid', name = 'output1')(actv11_new)
 
     # -------------Second UNet
     # -------------Encoder
@@ -283,9 +277,14 @@ def wnet_model(n_classes=7, im_sz=160, n_channels=3, n_filters_start=32, growth_
     def custom_loss(y_true, y_pred):
         return dice_coef_multilabel(y_true, y_pred, n_classes) + losses.binary_crossentropy(y_true, y_pred)
 
+    def dice_coef(y_true, y_pred, smooth=1e-9):
+        y_true_f = K.flatten(y_true)
+        y_pred_f = K.flatten(y_pred)
+        intersection = K.sum(y_true_f * y_pred_f)
+        return 1.0 - ((2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth))
+
     #n_instances_per_class = [v for k, v in get_n_instances(dataset).items()]
-    #model.compile(optimizer=Adam(lr=10e-5), loss=[keras_lovasz_softmax, mean_squared_error], loss_weights=[0.95,0.05])
-    model.compile(optimizer=Adam(lr = 10e-5), loss=[custom_loss, mean_squared_error], loss_weights  = [0.95, 0.05], metrics=["accuracy"])
-    #model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef_multilabel, mean_squared_error], loss_weights  = [0.95, 0.05])
+    #model.compile(optimizer=Adam(lr = 10e-5), loss=[losses.binary_crossentropy, mean_squared_error], loss_weights  = [0.95, 0.05])
+    model.compile(optimizer=Adam(lr = 10e-5), loss=[dice_coef, mean_squared_error], loss_weights  = [0.95, 0.05])
     #model.compile(optimizer=Adam(lr = 10e-5), loss=[categorical_class_balanced_focal_loss(n_instances_per_class, 0.99), mean_squared_error], loss_weights  = [0.95, 0.05])
     return model

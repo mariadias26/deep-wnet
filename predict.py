@@ -37,27 +37,15 @@ def reconstruct_patches(patches, image_size, step):
     return img/patch_count
 
 def predict(x, model, patch_sz=160, n_classes=5, step = 142):
-    dim_x, dim_y = x.shape
-    patches = patchify(x, (patch_sz, patch_sz), step = step)
-    width_window, height_window, width_x, height_y= patches.shape
+    dim_x, dim_y, h = x.shape
+    patches = patchify(x, (patch_sz, patch_sz, h), step = step)
+    width_window, height_window,c,  width_x, height_y, l= patches.shape
     patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, 1))
     predict = model.predict(patches, batch_size = 1)
-    patches_predict = predict[0]
-    prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
+    prediction = reconstruct_patches(predict[0], (dim_x, dim_y, n_classes), step)
+    i = reconstruct_patches(predict[1], (dim_x, dim_y, 3), step)
+    return prediction, i
 
-    return prediction
-'''
-def predict(x, model, patch_sz=160, n_classes=5, step = 142):
-    dim_x, dim_y, dim = x.shape
-    patches = patchify(x, (patch_sz, patch_sz, x.ndim), step = step)
-    width_window, height_window, z, width_x, height_y, num_channel = patches.shape
-    patches = np.reshape(patches, (width_window * height_window,  width_x, height_y, num_channel))
-    predict = model.predict(patches)
-    patches_predict = predict[0]
-    prediction = reconstruct_patches(patches_predict, (dim_x, dim_y, n_classes), step)
-
-    return prediction#, new_image
-'''
 def picture_from_mask(mask):
     colors = {
         0: [255, 255, 255],   #imp surface
@@ -102,7 +90,8 @@ def predict_all(step, path_img):
         test = ['2_13','2_14','3_13','3_14','4_13','4_14','4_15','5_13','5_14','5_15','6_13','6_14','6_15','7_13']
         path_m = '/home/mdias/datasets/potsdam/5_Labels_all/top_potsdam_{}_label.tif'
     elif DATASET == 'vaihingen':
-        test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
+        #test = ['2', '4', '6', '8', '10', '12', '14', '16', '20', '22', '24', '27', '29', '31', '33', '35', '38']
+        test = ['22']
         path_m = '/home/mdias/datasets/vaihingen/Ground_Truth/top_mosaic_09cm_area{}.tif'
     path_i = path_img
     accuracy_all = []
@@ -118,17 +107,22 @@ def predict_all(step, path_img):
             step, x_padding, y_padding, x_original, y_original = find_step(img, PATCH_SZ, test_id)
             print('Step: ', step, x_padding, y_padding, x_original, y_original)
             img = cv2.copyMakeBorder(img, 0, x_padding-x_original, 0, y_padding-y_original, cv2.BORDER_CONSTANT)
-        mask = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step).transpose([2,0,1])
+            img = np.expand_dims(img, axis = 2)
+        mask, previsao = predict(img, model, patch_sz=PATCH_SZ, n_classes=N_CLASSES, step = step)
+        print(mask.shape, p)
         if DATASET == 'vaihingen':
             mask = mask.transpose([1,2,0])
             mask = mask[:x_original, :y_original, ]
             mask = mask.transpose([2,0,1])
-
-        prediction = picture_from_mask(mask)
+        print(mask.shape, '1')
+        prediction = picture_from_mask(mask).transpose([1,2,0])
+        print(prediction.shape, '2')
         target_labels = ['imp surf', 'car', 'building', 'background', 'low veg', 'tree']
         labels = list(range(len(target_labels)))
+
         y_true = gt.ravel()
         y_pred = np.argmax(mask, axis=0).ravel()
+        print('oioi', y_true.shape, y_pred.shape)
         report = classification_report(y_true, y_pred, target_names = target_labels, labels = labels)
         accuracy = accuracy_score(y_true, y_pred)
         print('\n',test_id)
@@ -136,6 +130,7 @@ def predict_all(step, path_img):
         print('\nAccuracy', accuracy)
         accuracy_all.append(accuracy)
         tiff.imsave(path_results + '/mask_{}.tif'.format(test_id), mask)
+        tiff.imsave(path_results + '/img_{}.tif'.format(test_id), previsao)
 
 
     print(accuracy_all)
